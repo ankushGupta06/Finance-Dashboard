@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Spacing & Radius --- */
+  --radius-main: 48px;
+  --radius-card: 32px;
+  
+  /* --- Shadows --- */
+  --shadow-soft: 0 20px 50px -12px rgba(0, 0, 0, 0.05);
+
+  /* --- Colors Mapping --- */
+  /* This tells Tailwind: "When I use bg-surface, look for the CSS variable --surface" */
+  --color-primary: oklch(0.623 0.214 259.815);
+  --color-surface: var(--surface);
+  --color-card-bg: var(--card-bg);
+  --color-main-text: var(--main-text);
+  --color-border-subtle: var(--border-subtle);
+}
+
+/* --- THE ENGINE: Root Variables --- */
+:root {
+  --surface: #F8FAFC;
+  --card-bg: #ffffff;
+  --main-text: #0f172a;
+  --border-subtle: #f1f5f9;
+}
+
+/* --- DARK MODE OVERRIDE --- */
+/* High priority selector to ensure variables swap */
+.dark, [data-theme='dark'] {
+  --surface: #0f172a;
+  --card-bg: #1e293b;
+  --main-text: #f8fafc;
+  --border-subtle: #334155;
+  --shadow-soft: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-main-text antialiased transition-colors duration-300;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  /* 3D Flip Mechanics */
+  .perspective-1000 { 
+    perspective: 1000px; 
+  }
+  .preserve-3d { 
+    transform-style: preserve-3d; 
+  }
+  .backface-hidden { 
+    backface-visibility: hidden; 
+    -webkit-backface-visibility: hidden;
+  }
+  .rotate-y-180 { 
+    transform: rotateY(180deg); 
+  }
+
+  /* Layout Radius Helpers */
+  .rounded-main { border-radius: var(--radius-main); }
+  .rounded-card { border-radius: var(--radius-card); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+}
+
+@keyframes slide-in-smooth {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slide-out-smooth {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+}
+
+.animate-in-smooth {
+  animation: slide-in-smooth 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-out-smooth {
+  animation: slide-out-smooth 0.3s ease-in forwards;
+}
