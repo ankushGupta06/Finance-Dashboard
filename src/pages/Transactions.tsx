@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
@@ -20,41 +20,51 @@ export default function TransactionsPage() {
   const { role } = useRole();
   const { addAlert } = useAlert();
 
-  // --- PAGINATION STATE ---
   const ITEMS_PER_PAGE = 8;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // --- DATA STATE ---
-  // We repeat the initialTransactions twice to ensure we have enough data for multiple pages
-  const [localTransactions, setLocalTransactions] = useState([
-    ...initialTransactions,
-    ...initialTransactions,
-  ]);
+  const [localTransactions, setLocalTransactions] = useState(initialTransactions);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --- FILTERING LOGIC ---
   const filteredTransactions = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
     return localTransactions.filter((t) => {
-      const matchesSearch = t.note
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const categoryName =
+        categories.find((c) => c.id === t.categoryId)?.name.toLowerCase() || "";
+
+      const matchesSearch =
+        normalizedSearch.length === 0 ||
+        t.note.toLowerCase().includes(normalizedSearch) ||
+        t.type.toLowerCase().includes(normalizedSearch) ||
+        t.date.toLowerCase().includes(normalizedSearch) ||
+        String(t.amount).includes(normalizedSearch) ||
+        categoryName.includes(normalizedSearch);
+
       const matchesCategory =
         selectedCategory === "all" || t.categoryId === selectedCategory;
+
       return matchesSearch && matchesCategory;
     });
   }, [localTransactions, searchTerm, selectedCategory]);
 
-  // --- PAGINATION CALCULATION ---
-  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE),
+  );
+
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedTransactions = filteredTransactions.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
 
-  // --- HANDLERS ---
   const handleAddTransaction = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -66,19 +76,18 @@ export default function TransactionsPage() {
       const categoryId = formData.get("categoryId") as string;
       const type = formData.get("type") as "income" | "expense";
 
-      // ✅ Validation
       if (!note) {
-        addAlert("Note is required ⚠️", "error");
+        addAlert("Note is required.", "error");
         return;
       }
 
       if (!amount || amount <= 0) {
-        addAlert("Amount must be greater than 0 ⚠️", "error");
+        addAlert("Amount must be greater than 0.", "error");
         return;
       }
 
       if (!categoryId) {
-        addAlert("Please select a category ⚠️", "error");
+        addAlert("Please select a category.", "error");
         return;
       }
 
@@ -87,26 +96,28 @@ export default function TransactionsPage() {
         amount,
         type,
         categoryId,
+        accountId: "a1",
+        mode: "cash",
         date: new Date().toISOString().split("T")[0],
         note,
+        createdAt: new Date().toISOString(),
       };
 
       setLocalTransactions((prev) => [newTx, ...prev]);
       setCurrentPage(1);
       setIsModalOpen(false);
 
-      // ✅ Success Alert
-      addAlert("Transaction added successfully ✅", "success");
+      addAlert("Transaction added successfully.", "success");
     } catch (error) {
       console.error(error);
-      addAlert("Something went wrong while adding transaction ❌", "error");
+      addAlert("Something went wrong while adding transaction.", "error");
     }
   };
 
   const exportToCSV = () => {
     try {
       if (!localTransactions.length) {
-        addAlert("No transactions to export ⚠️", "error");
+        addAlert("No transactions to export.", "error");
         return;
       }
 
@@ -130,18 +141,15 @@ export default function TransactionsPage() {
       a.download = `transactions_${new Date().toLocaleDateString()}.csv`;
       a.click();
 
-      // cleanup
       window.URL.revokeObjectURL(url);
 
-      // ✅ Success Alert
-      addAlert("CSV exported successfully 📁", "success");
+      addAlert("CSV exported successfully.", "success");
     } catch (error) {
       console.error(error);
-      addAlert("Failed to export CSV ❌", "error");
+      addAlert("Failed to export CSV.", "error");
     }
   };
 
-  // Reset to page 1 when search or filter changes
   const handleSearchChange = (val: string) => {
     setSearchTerm(val);
     setCurrentPage(1);
@@ -190,7 +198,6 @@ export default function TransactionsPage() {
             </div>
           </div>
 
-          {/* Search/Filter Bar */}
           <div className="bg-white p-4 rounded-[28px] border border-gray-50 shadow-sm mb-8 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search
@@ -199,7 +206,7 @@ export default function TransactionsPage() {
               />
               <input
                 type="text"
-                placeholder="Search by note..."
+                placeholder="Search by note, category, type, date or amount..."
                 className="w-full bg-gray-50 border-none rounded-2xl py-3 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-100 transition-all"
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
@@ -219,22 +226,16 @@ export default function TransactionsPage() {
             </select>
           </div>
 
-          {/* Table & Pagination Container */}
           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
             <TransactionList
               transactions={paginatedTransactions}
               categories={categories}
             />
 
-            {/* --- PAGINATION CONTROLS --- */}
-            {totalPages > 1 && (
+            {filteredTransactions.length > ITEMS_PER_PAGE && (
               <div className="flex flex-col sm:flex-row items-center justify-between mt-8 pt-6 border-t border-gray-50 gap-4">
                 <p className="text-xs font-bold text-gray-400">
-                  Showing{" "}
-                  <span className="text-gray-800">
-                    {paginatedTransactions.length}
-                  </span>{" "}
-                  of {filteredTransactions.length} transactions
+                  Showing <span className="text-gray-800">{startIndex + 1}-{startIndex + paginatedTransactions.length}</span> of {filteredTransactions.length} transactions
                 </p>
 
                 <div className="flex items-center gap-2">
@@ -275,7 +276,6 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        {/* --- ADD TRANSACTION MODAL --- */}
         {isModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
             <div className="bg-white rounded-[40px] w-full max-w-md p-10 relative shadow-2xl animate-in fade-in zoom-in duration-200">
@@ -306,7 +306,7 @@ export default function TransactionsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">
-                      Amount (₹)
+                      Amount (Rs)
                     </label>
                     <input
                       name="amount"
@@ -336,8 +336,13 @@ export default function TransactionsPage() {
                   </label>
                   <select
                     name="categoryId"
+                    required
+                    defaultValue=""
                     className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none cursor-pointer"
                   >
+                    <option value="" disabled>
+                      Select category
+                    </option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}

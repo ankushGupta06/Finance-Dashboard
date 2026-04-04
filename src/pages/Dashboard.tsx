@@ -3,6 +3,8 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import AccountCard from "../components/cards/AccountCard";
+import SpendingLineChart from "../components/charts/SpendingLineChart";
+import ExpensePieChart from "../components/charts/ExpensePieChart";
 import { accounts as initialAccounts } from "../data/accounts";
 import { 
   Plus, 
@@ -179,6 +181,11 @@ export default function DashboardPage() {
               </div>
             </div>
 
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-10">
+            <SpendingLineChart />
+            <ExpensePieChart />
           </div>
         </div>
       </Container>

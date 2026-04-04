@@ -1,63 +1,79 @@
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from "recharts"; // Removed 'Gradient' from here
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { transactions } from "../../data/transactions";
 
-// Mocking weekly trend data based on your April 2026 timeline
-const data = [
-  { day: "Mon", amount: 2400 },
-  { day: "Tue", amount: 1398 },
-  { day: "Wed", amount: 9800 },
-  { day: "Thu", amount: 3908 },
-  { day: "Fri", amount: 4800 },
-  { day: "Sat", amount: 3800 },
-  { day: "Sun", amount: 4300 },
-];
+const byDate = transactions.reduce<Record<string, number>>((acc, tx) => {
+  if (tx.type === "expense") {
+    acc[tx.date] = (acc[tx.date] || 0) + tx.amount;
+  }
+  return acc;
+}, {});
+
+const lineData = Object.entries(byDate)
+  .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+  .slice(-10)
+  .map(([date, expense]) => ({
+    date,
+    label: new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
+    expense,
+  }));
 
 export default function SpendingLineChart() {
   return (
     <div className="bg-white p-8 rounded-[32px] border border-gray-50 shadow-sm h-[400px] flex flex-col">
-      <h3 className="text-lg font-black text-gray-800 mb-6 tracking-tight">Spending Trend</h3>
+      <h3 className="text-lg font-black text-gray-800 mb-2 tracking-tight">Expense Trend</h3>
+      <p className="text-xs text-gray-400 mb-5">Last 10 days from mock data</p>
       <div className="flex-1 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <defs>
-              {/* This is the standard SVG way Recharts handles gradients */}
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
+          <LineChart data={lineData} margin={{ left: 4, right: 12, top: 8, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-            <XAxis 
-              dataKey="day" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{fill: '#94A3B8', fontSize: 12}}
-              dy={10}
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94A3B8", fontSize: 11 }}
+              minTickGap={20}
             />
-            <YAxis hide />
-            <Tooltip 
-              contentStyle={{ 
-                borderRadius: '16px', 
-                border: 'none', 
-                boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' 
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94A3B8", fontSize: 11 }}
+              tickFormatter={(value) => `Rs ${value}`}
+              width={58}
+            />
+            <Tooltip
+              formatter={(value) => {
+                const numericValue =
+                  typeof value === "number" ? value : Number(value || 0);
+                return [`Rs ${numericValue.toLocaleString()}`, "Expense"];
+              }}
+              labelFormatter={(label) => `Date: ${label}`}
+              contentStyle={{
+                borderRadius: "14px",
+                border: "none",
+                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
               }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="amount" 
-              stroke="#3B82F6" 
-              strokeWidth={4}
-              fillOpacity={1} 
-              fill="url(#colorValue)" 
+            <Line
+              type="monotone"
+              dataKey="expense"
+              name="Expense"
+              stroke="#2563EB"
+              strokeWidth={3}
+              dot={{ r: 2 }}
+              activeDot={{ r: 5 }}
             />
-          </AreaChart>
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
