@@ -2,7 +2,7 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import HistoricalSpendingBarChart from "../components/charts/HistoricalSpendingBarChart";
-import { transactions } from "../data/transactions";
+import { useTransactions } from "../context/TransactionsContext";
 import { categories } from "../data/categories";
 import {
   TrendingUp,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 export default function InsightsPage() {
+  const { transactions } = useTransactions();
   const expenseTx = transactions.filter((t) => t.type === "expense");
   const incomeTx = transactions.filter((t) => t.type === "income");
 

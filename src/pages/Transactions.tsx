@@ -4,7 +4,10 @@ import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import TransactionList from "../components/transactions/TransactionList";
 import { useRole } from "../context/RoleContext";
-import { transactions as initialTransactions } from "../data/transactions";
+import {
+  useTransactions,
+  type TransactionRecord,
+} from "../context/TransactionsContext";
 import { categories } from "../data/categories";
 import { useAlert } from "../context/AlertContext";
 import {
@@ -16,7 +19,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-type TransactionRecord = (typeof initialTransactions)[number];
 type TransactionType = TransactionRecord["type"];
 
 const getEmptyFormState = (): {
@@ -36,11 +38,11 @@ const getEmptyFormState = (): {
 export default function TransactionsPage() {
   const { role } = useRole();
   const { addAlert } = useAlert();
+  const { transactions: localTransactions, setTransactions: setLocalTransactions } =
+    useTransactions();
 
   const ITEMS_PER_PAGE = 8;
   const [currentPage, setCurrentPage] = useState(1);
-
-  const [localTransactions, setLocalTransactions] = useState(initialTransactions);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSort, setSelectedSort] = useState("latest");

@@ -4,12 +4,12 @@ import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import { useRole } from "../context/RoleContext";
 import { useTheme } from "../context/ThemeContext";
+import { useTransactions } from "../context/TransactionsContext";
 import AccountCard from "../components/cards/AccountCard";
 import SpendingLineChart from "../components/charts/SpendingLineChart";
 import ExpensePieChart from "../components/charts/ExpensePieChart";
 import { accounts as initialAccounts } from "../data/accounts";
 import { categories } from "../data/categories";
-import { transactions } from "../data/transactions";
 import {
   Plus,
   ArrowUpRight,
@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const [isCardActive, setIsCardActive] = useState(true);
   const { role } = useRole();
   const { theme } = useTheme();
+  const { transactions } = useTransactions();
 
   const mainAccount = allAccounts[0];
   const totalIncome = transactions

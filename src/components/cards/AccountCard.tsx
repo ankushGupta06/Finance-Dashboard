@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Cloud, ChevronLeft, ChevronRight, Lock } from "lucide-react";
-import { transactions } from "../../data/transactions";
+import { useTransactions } from "../../context/TransactionsContext";
 import { user } from "../../data/users";
 
 type AccountCardProps = {
@@ -15,6 +15,7 @@ export default function AccountCard({
   onToggleActive,
 }: AccountCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const { transactions } = useTransactions();
   const accountTransactions = transactions.filter((tx) => tx.accountId === account.id);
   const income = accountTransactions
     .filter((tx) => tx.type === "income")

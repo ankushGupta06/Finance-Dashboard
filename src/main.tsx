@@ -4,6 +4,7 @@ import App from "./App";
 import { RoleProvider } from "./context/RoleContext";
 import { AlertProvider } from "./context/AlertContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { TransactionsProvider } from "./context/TransactionsContext";
 import "./index.css"; // <--- ADD THIS LINE!
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -12,7 +13,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ThemeProvider>
       <AlertProvider>
         <RoleProvider>
-          <App />
+          <TransactionsProvider>
+            <App />
+          </TransactionsProvider>
         </RoleProvider>
       </AlertProvider>
     </ThemeProvider>
