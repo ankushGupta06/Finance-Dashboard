@@ -1,6 +1,7 @@
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
+import HistoricalSpendingBarChart from "../components/charts/HistoricalSpendingBarChart";
 import { transactions } from "../data/transactions";
 import { categories } from "../data/categories";
 import {
@@ -30,10 +31,14 @@ export default function InsightsPage() {
       : null;
 
   const topCategory = categories.find((c) => c.id === topCategoryId);
+  const topCategoryName = topCategory?.name ?? "top category";
   const income = incomeTx.reduce((acc, t) => acc + t.amount, 0);
   const expense = expenseTx.reduce((acc, t) => acc + t.amount, 0);
   const savings = income - expense;
   const savingsRate = income > 0 ? Math.round((savings / income) * 100) : 0;
+  const savingsProgress = Math.min(100, Math.max(0, savingsRate));
+  const healthLabel =
+    savingsRate >= 35 ? "Excellent" : savingsRate >= 20 ? "Healthy" : "Needs Attention";
   const latestExpenseDate = expenseTx.reduce<Date | null>((latest, tx) => {
     const current = new Date(tx.date);
     return !latest || current > latest ? current : latest;
@@ -112,7 +117,7 @@ export default function InsightsPage() {
                     </span>
                   </div>
                   <h3 className="text-4xl font-black text-gray-800 mb-6">
-                    Excellent
+                    {healthLabel}
                   </h3>
 
                   <div className="flex items-end gap-10">
@@ -128,7 +133,7 @@ export default function InsightsPage() {
                       <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-blue-500 rounded-full"
-                          style={{ width: `${savingsRate}%` }}
+                          style={{ width: `${savingsProgress}%` }}
                         />
                       </div>
                     </div>
@@ -156,10 +161,10 @@ export default function InsightsPage() {
                         {data.month}
                       </p>
                       <p className="text-xl md:text-2xl font-black text-gray-800">
-                        ₹{data.amount.toLocaleString()}
+                        Rs {data.amount.toLocaleString()}
                       </p>
                       <div
-                        className={`mt-3 flex items-center gap-1.5 text-xs md:text-sm font-bold ${data.trend === "up" ? "text-red-500" : "text-green-500"}`}
+                        className={`mt-3 flex items-center gap-1.5 text-xs md:text-sm font-bold ${data.trend === "up" ? "text-green-500" : "text-red-500"}`}
                       >
                         {data.trend === "up" ? (
                           <TrendingUp size={12} />
@@ -173,45 +178,7 @@ export default function InsightsPage() {
                   ))}
                 </div>
 
-                {/* Historical Bar Graph */}
-                <div className="space-y-6">
-                  <div className="flex items-end justify-between gap-4 h-64 px-6 pt-10 pb-2 bg-gray-50/50 rounded-[32px] border border-dashed border-gray-200">
-                    {monthlyHistoryWithTrend.map((bar, i) => (
-                      <div
-                        key={bar.key}
-                        className="flex-1 flex flex-col items-center justify-end h-full group"
-                      >
-                        {/* Value Label on Hover */}
-                        <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <span className="bg-gray-800 text-white text-[10px] py-1 px-2 rounded-lg font-bold shadow-lg">
-                            Rs {bar.amount.toLocaleString()}
-                          </span>
-                        </div>
-
-                        {/* The Bar */}
-                        <div
-                          className={`w-full max-w-[45px] rounded-t-2xl transition-all duration-1000 ease-out shadow-sm
-            ${
-              i === monthlyHistoryWithTrend.length - 1
-                ? "bg-blue-600 shadow-blue-100"
-                : "bg-blue-100 group-hover:bg-blue-200"
-            }`}
-                          style={{
-                            height: `${bar.barHeight}%`,
-                            minHeight: "4px", // Ensures it's never "invisible"
-                          }}
-                        />
-
-                        {/* Month Label */}
-                        <span
-                          className={`text-[11px] font-black mt-4 mb-2 ${i === monthlyHistoryWithTrend.length - 1 ? "text-blue-600" : "text-gray-400"}`}
-                        >
-                          {bar.month}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <HistoricalSpendingBarChart data={monthlyHistoryWithTrend} />
               </div>
             </div>
 
@@ -224,14 +191,14 @@ export default function InsightsPage() {
                   Top Spending
                 </p>
                 <h4 className="text-2xl font-black mb-4 capitalize">
-                  {topCategory?.name}
+                  {topCategoryName}
                 </h4>
                 <p className="text-sm leading-relaxed opacity-90">
                   You spent{" "}
                   <span className="font-bold">
-                    ₹{categoryTotals[topCategoryId!]?.toLocaleString()}
+                    Rs {categoryTotals[topCategoryId!]?.toLocaleString() ?? 0}
                   </span>{" "}
-                  on {topCategory?.name} this month. This is your largest
+                  on {topCategoryName} across your recent activity. This is your largest
                   expense area.
                 </p>
                 <button className="mt-8 flex items-center gap-2 text-xs font-bold group">
@@ -247,14 +214,14 @@ export default function InsightsPage() {
               <div className="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-50 text-green-500 rounded-2xl">
-                    <TrendingDown size={20} />
+                    <TrendingUp size={20} />
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest leading-none mb-1">
                       Savings
                     </p>
                     <p className="text-lg font-black text-gray-800 leading-none">
-                      ₹{savings.toLocaleString()}
+                      Rs {savings.toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -267,9 +234,9 @@ export default function InsightsPage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-gray-400 leading-relaxed italic">
-                    "Reducing your {topCategory?.name} spending by just 10%
-                    could add ₹
-                    {(categoryTotals[topCategoryId!]! * 0.1).toFixed(0)} to your{" "}
+                    "Reducing your {topCategoryName} spending by just 10%
+                    could add Rs{" "}
+                    {((categoryTotals[topCategoryId!] ?? 0) * 0.1).toFixed(0)} to your{" "}
                     {categories.find((c) => c.id === "c4")?.name || "savings"}."
                   </p>
                 </div>

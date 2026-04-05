@@ -36,7 +36,7 @@ export default function AccountCard({
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
                   <h3 className="text-base md:text-lg font-black tracking-tight text-white">zorvyn</h3>
-                  <p className="text-[9px] md:text-[10px] font-bold opacity-60 uppercase tracking-widest">Premium Account</p>
+                  <p className="text-[9px] md:text-[10px] font-bold opacity-60 uppercase tracking-widest">Primary Account</p>
                 </div>
                 <div className="space-y-4 md:space-y-6">
                   <p className="text-base md:text-xl tracking-[0.2em] md:tracking-[0.3em] font-bold text-white/90">
@@ -48,7 +48,7 @@ export default function AccountCard({
                       <p className="text-xs md:text-sm font-bold tracking-wide">{user.name}</p>
                     </div>
                     <div>
-                      <p className="text-[8px] md:text-[9px] uppercase opacity-50 mb-0.5 md:mb-1 font-bold">Expire Date</p>
+                      <p className="text-[8px] md:text-[9px] uppercase opacity-50 mb-0.5 md:mb-1 font-bold">Expiry Date</p>
                       <p className="text-xs md:text-sm font-bold tracking-wide">06/29</p>
                     </div>
                   </div>

@@ -11,37 +11,15 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { notifications } from "../../data/notifications";
+import { user } from "../../data/users";
 
 export default function Header() {
   const { role, setRole } = useRole();
-  const { theme, toggleTheme } = useTheme(); // ✅ global theme
+  const { theme, toggleTheme } = useTheme();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-
-  const notifications = [
-    {
-      id: 1,
-      title: "Budget alert",
-      message: "Groceries spending is 12% higher than last week.",
-      time: "Just now",
-      unread: true,
-    },
-    {
-      id: 2,
-      title: "Monthly report",
-      message: "Your March finance summary is ready to view.",
-      time: "2h ago",
-      unread: false,
-    },
-    {
-      id: 3,
-      title: "Payment received",
-      message: "Salary credit has been added to your account.",
-      time: "Yesterday",
-      unread: false,
-    },
-  ];
 
   return (
     <div className="mb-6 px-1 sm:px-2 md:px-4 animate-in fade-in slide-in-from-top duration-500">
@@ -150,14 +128,14 @@ export default function Header() {
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl border-2 border-white shadow-sm dark:border-slate-700">
                     <img
-                      src="https://ui-avatars.com/api/?name=Ankush+Gupta&background=3B82F6&color=fff&bold=true"
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.avatarName)}&background=3B82F6&color=fff&bold=true`}
                       alt="Avatar"
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="min-w-0 text-left">
                     <p className="truncate text-xs font-black leading-none text-gray-800 dark:text-white">
-                      Ankush Gupta
+                      {user.name}
                     </p>
                     <div className="mt-1 flex items-center gap-1">
                       <span

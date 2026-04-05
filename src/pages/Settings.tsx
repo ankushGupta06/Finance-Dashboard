@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
+import { user } from "../data/users";
 import { User, Bell, Shield, Mail, Smartphone, KeyRound } from "lucide-react";
 
 type SettingsTab = "profile" | "notifications" | "security";
@@ -47,7 +48,7 @@ export default function SettingsPage() {
         <div className="px-4 pb-10">
           <div className="mb-10">
             <h2 className="text-3xl font-black text-gray-800 tracking-tight">Settings</h2>
-            <p className="text-gray-400 text-sm mt-1">Personalize your zorvyn experience</p>
+            <p className="text-gray-400 text-sm mt-1">Personalize your Zorvyn experience</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -102,7 +103,7 @@ export default function SettingsPage() {
                     <div>
                       <label className="text-xs font-bold text-gray-500 uppercase">Full Name</label>
                       <input
-                        defaultValue="Ankush Gupta"
+                        defaultValue={user.name}
                         className="mt-2 w-full bg-gray-50 rounded-2xl px-4 py-3 outline-none border border-transparent focus:border-blue-200"
                       />
                     </div>
@@ -111,7 +112,7 @@ export default function SettingsPage() {
                       <div className="mt-2 relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input
-                          defaultValue="ankush@zorvyn.app"
+                          defaultValue={user.email}
                           className="w-full bg-gray-50 rounded-2xl pl-10 pr-4 py-3 outline-none border border-transparent focus:border-blue-200"
                         />
                       </div>

@@ -263,7 +263,7 @@ export default function DashboardPage() {
                       </div>
                       <p
                         className={`shrink-0 text-sm font-black ${
-                          isIncome ? "text-green-500 dark:text-green-300" : "text-gray-800 dark:text-slate-100"
+                          isIncome ? "text-green-500 dark:text-green-300" : "text-red-500 dark:text-red-300"
                         }`}
                       >
                         {isIncome ? "+" : "-"}Rs {tx.amount.toLocaleString()}

@@ -1,6 +1,12 @@
 import TransactionItem from "./TransactionItem";
 
-export default function TransactionList({ transactions, categories }: any) {
+export default function TransactionList({
+  transactions,
+  categories,
+  role,
+  onEdit,
+  onDelete,
+}: any) {
   return (
     <div className="mt-8">
       <div className="flex justify-between items-center mb-6">
@@ -13,9 +19,13 @@ export default function TransactionList({ transactions, categories }: any) {
           <thead>
             <tr className="text-[11px] uppercase tracking-[0.1em] text-gray-300 dark:text-slate-400 font-bold border-b border-gray-50 dark:border-slate-700">
               <th className="pb-4 font-bold">Receiver</th>
+              <th className="pb-4 font-bold">Category</th>
               <th className="pb-4 font-bold">Type</th>
               <th className="pb-4 font-bold">Date</th>
               <th className="pb-4 font-bold text-right">Amount</th>
+              {role === "admin" && (
+                <th className="pb-4 font-bold text-right">Actions</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50/50 dark:divide-slate-700/60">
@@ -26,6 +36,9 @@ export default function TransactionList({ transactions, categories }: any) {
                   key={tx.id} 
                   tx={tx} 
                   category={category} 
+                  role={role}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
                 />
               );
             })}

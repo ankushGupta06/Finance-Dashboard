@@ -16,6 +16,23 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+type TransactionRecord = (typeof initialTransactions)[number];
+type TransactionType = TransactionRecord["type"];
+
+const getEmptyFormState = (): {
+  note: string;
+  amount: string;
+  type: TransactionType;
+  categoryId: string;
+  date: string;
+} => ({
+  note: "",
+  amount: "",
+  type: "expense",
+  categoryId: "",
+  date: new Date().toISOString().split("T")[0],
+});
+
 export default function TransactionsPage() {
   const { role } = useRole();
   const { addAlert } = useAlert();
@@ -26,12 +43,21 @@ export default function TransactionsPage() {
   const [localTransactions, setLocalTransactions] = useState(initialTransactions);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSort, setSelectedSort] = useState("latest");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] =
+    useState<TransactionRecord | null>(null);
+  const [formState, setFormState] = useState(getEmptyFormState);
+
+  const filteredFormCategories = useMemo(
+    () => categories.filter((category) => category.type === formState.type),
+    [formState.type],
+  );
 
   const filteredTransactions = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    return localTransactions.filter((t) => {
+    const filtered = localTransactions.filter((t) => {
       const categoryName =
         categories.find((c) => c.id === t.categoryId)?.name.toLowerCase() || "";
 
@@ -48,7 +74,20 @@ export default function TransactionsPage() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [localTransactions, searchTerm, selectedCategory]);
+
+    return filtered.slice().sort((a, b) => {
+      switch (selectedSort) {
+        case "oldest":
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        case "amount-high":
+          return b.amount - a.amount;
+        case "amount-low":
+          return a.amount - b.amount;
+        default:
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+    });
+  }, [localTransactions, searchTerm, selectedCategory, selectedSort]);
 
   const totalPages = Math.max(
     1,
@@ -62,16 +101,70 @@ export default function TransactionsPage() {
     startIndex + ITEMS_PER_PAGE,
   );
 
+  const resetForm = () => {
+    setFormState(getEmptyFormState());
+    setEditingTransaction(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (transaction: TransactionRecord) => {
+    setEditingTransaction(transaction);
+    setFormState({
+      note: transaction.note,
+      amount: String(transaction.amount),
+      type: transaction.type,
+      categoryId: transaction.categoryId,
+      date: transaction.date,
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    resetForm();
+  };
+
+  const handleFormChange = (
+    field: keyof typeof formState,
+    value: string,
+  ) => {
+    setFormState((prev) => {
+      const nextState = {
+        ...prev,
+        [field]: value,
+      };
+
+      if (field === "type") {
+        const nextType = value as TransactionType;
+        const nextCategories = categories.filter(
+          (category) => category.type === nextType,
+        );
+        const hasMatchingCategory = nextCategories.some(
+          (category) => category.id === prev.categoryId,
+        );
+
+        nextState.categoryId = hasMatchingCategory
+          ? prev.categoryId
+          : nextCategories[0]?.id || "";
+      }
+
+      return nextState;
+    });
+  };
+
   const handleAddTransaction = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const formData = new FormData(e.currentTarget);
-
-      const amount = Number(formData.get("amount"));
-      const note = (formData.get("note") as string)?.trim();
-      const categoryId = formData.get("categoryId") as string;
-      const type = formData.get("type") as "income" | "expense";
+      const amount = Number(formState.amount);
+      const note = formState.note.trim();
+      const categoryId = formState.categoryId;
+      const type = formState.type;
+      const date = formState.date;
 
       if (!note) {
         addAlert("Note is required.", "error");
@@ -88,27 +181,66 @@ export default function TransactionsPage() {
         return;
       }
 
-      const newTx = {
-        id: `t-${Date.now()}`,
+      if (!date) {
+        addAlert("Please select a transaction date.", "error");
+        return;
+      }
+
+      const matchedCategory = categories.find((category) => category.id === categoryId);
+
+      if (!matchedCategory || matchedCategory.type !== type) {
+        addAlert("Please choose a category that matches the transaction type.", "error");
+        return;
+      }
+
+      const baseTransaction = {
         amount,
         type,
         categoryId,
         accountId: "a1",
         mode: "cash",
-        date: new Date().toISOString().split("T")[0],
+        date,
         note,
-        createdAt: new Date().toISOString(),
       };
 
-      setLocalTransactions((prev) => [newTx, ...prev]);
-      setCurrentPage(1);
-      setIsModalOpen(false);
+      if (editingTransaction) {
+        setLocalTransactions((prev) =>
+          prev.map((transaction) =>
+            transaction.id === editingTransaction.id
+              ? {
+                  ...transaction,
+                  ...baseTransaction,
+                }
+              : transaction,
+          ),
+        );
+        addAlert("Transaction updated successfully.", "success");
+      } else {
+        const newTx = {
+          id: `t-${Date.now()}`,
+          ...baseTransaction,
+          createdAt: new Date().toISOString(),
+        };
 
-      addAlert("Transaction added successfully.", "success");
+        setLocalTransactions((prev) => [newTx, ...prev]);
+        addAlert("Transaction added successfully.", "success");
+      }
+
+      setCurrentPage(1);
+      closeModal();
     } catch (error) {
       console.error(error);
-      addAlert("Something went wrong while adding transaction.", "error");
+      addAlert("Something went wrong while saving the transaction.", "error");
     }
+  };
+
+  const handleDeleteTransaction = (transactionId: string) => {
+    setLocalTransactions((prev) =>
+      prev.filter((transaction) => transaction.id !== transactionId),
+    );
+
+    setCurrentPage(1);
+    addAlert("Transaction deleted successfully.", "success");
   };
 
   const exportToCSV = () => {
@@ -157,6 +289,11 @@ export default function TransactionsPage() {
     setCurrentPage(1);
   };
 
+  const handleSortChange = (val: string) => {
+    setSelectedSort(val);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
@@ -184,12 +321,12 @@ export default function TransactionsPage() {
               </button>
 
               {role === "admin" && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all"
-                >
-                  <Plus size={16} />
-                  Add Transaction
+              <button
+                onClick={openAddModal}
+                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all"
+              >
+                <Plus size={16} />
+                Add Transaction
                 </button>
               )}
             </div>
@@ -221,12 +358,25 @@ export default function TransactionsPage() {
                 </option>
               ))}
             </select>
+            <select
+              className="bg-gray-50 border-none rounded-2xl py-3 px-6 text-xs font-bold text-gray-600 outline-none cursor-pointer"
+              value={selectedSort}
+              onChange={(e) => handleSortChange(e.target.value)}
+            >
+              <option value="latest">Latest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="amount-high">Amount: High to Low</option>
+              <option value="amount-low">Amount: Low to High</option>
+            </select>
           </div>
 
           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
             <TransactionList
               transactions={paginatedTransactions}
               categories={categories}
+              role={role}
+              onEdit={openEditModal}
+              onDelete={handleDeleteTransaction}
             />
 
             {filteredTransactions.length > ITEMS_PER_PAGE && (
@@ -277,14 +427,14 @@ export default function TransactionsPage() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
             <div className="bg-white rounded-[40px] w-full max-w-md p-10 relative shadow-2xl animate-in fade-in zoom-in duration-200">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
               >
                 <X size={24} />
               </button>
 
               <h3 className="text-2xl font-black text-gray-800 mb-6">
-                New Transaction
+                {editingTransaction ? "Edit Transaction" : "New Transaction"}
               </h3>
 
               <form onSubmit={handleAddTransaction} className="space-y-6">
@@ -297,6 +447,8 @@ export default function TransactionsPage() {
                     required
                     placeholder="e.g. Starbucks Coffee"
                     className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                    value={formState.note}
+                    onChange={(e) => handleFormChange("note", e.target.value)}
                   />
                 </div>
 
@@ -311,6 +463,8 @@ export default function TransactionsPage() {
                       required
                       placeholder="0.00"
                       className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                      value={formState.amount}
+                      onChange={(e) => handleFormChange("amount", e.target.value)}
                     />
                   </div>
                   <div>
@@ -320,6 +474,8 @@ export default function TransactionsPage() {
                     <select
                       name="type"
                       className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none cursor-pointer"
+                      value={formState.type}
+                      onChange={(e) => handleFormChange("type", e.target.value)}
                     >
                       <option value="expense">Expense</option>
                       <option value="income">Income</option>
@@ -329,18 +485,33 @@ export default function TransactionsPage() {
 
                 <div>
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">
+                    Date
+                  </label>
+                  <input
+                    name="date"
+                    type="date"
+                    required
+                    className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"
+                    value={formState.date}
+                    onChange={(e) => handleFormChange("date", e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">
                     Category
                   </label>
                   <select
                     name="categoryId"
                     required
-                    defaultValue=""
                     className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm outline-none cursor-pointer"
+                    value={formState.categoryId}
+                    onChange={(e) => handleFormChange("categoryId", e.target.value)}
                   >
                     <option value="" disabled>
-                      Select category
+                      Select {formState.type} category
                     </option>
-                    {categories.map((c) => (
+                    {filteredFormCategories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
                       </option>
@@ -352,7 +523,7 @@ export default function TransactionsPage() {
                   type="submit"
                   className="w-full bg-blue-600 text-white py-4 rounded-[20px] font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all"
                 >
-                  Save Transaction
+                  {editingTransaction ? "Update Transaction" : "Save Transaction"}
                 </button>
               </form>
             </div>
