@@ -15,7 +15,7 @@ export const RoleProvider = ({ children }: any) => {
 
     addAlert(
       `Switched to ${
-        newRole === "admin" ? "Admin 👑" : "Viewer 👤"
+        newRole === "admin" ? "Admin" : "Viewer"
       } mode`,
       "info"
     );

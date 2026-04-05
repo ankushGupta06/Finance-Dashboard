@@ -46,9 +46,9 @@ export const AlertProvider = ({ children }: any) => {
           >
             {/* ICON */}
             <span className="text-lg">
-              {alert.type === "success" && "✅"}
-              {alert.type === "error" && "❌"}
-              {alert.type === "info" && "🔔"}
+              {alert.type === "success" }
+              {alert.type === "error" }
+              {alert.type === "info" }
             </span>
 
             {/* MESSAGE */}

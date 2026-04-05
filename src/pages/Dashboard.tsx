@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
+import { useRole } from "../context/RoleContext";
 import AccountCard from "../components/cards/AccountCard";
 import SpendingLineChart from "../components/charts/SpendingLineChart";
 import ExpensePieChart from "../components/charts/ExpensePieChart";
@@ -19,6 +20,7 @@ import {
 export default function DashboardPage() {
   const [allAccounts] = useState(initialAccounts);
   const [isFlipped, setIsFlipped] = useState(false);
+  const { role } = useRole();
 
   const mainAccount = allAccounts[0];
 
@@ -148,15 +150,17 @@ export default function DashboardPage() {
                 ))}
               </div>
 
-              <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[32px] p-6 text-white shadow-lg shadow-blue-100">
-                <h4 className="text-sm font-black mb-2">Zorvyn Pro</h4>
-                <p className="text-[10px] leading-relaxed opacity-80 mb-4 font-medium">
-                  Upgrade to Pro to unlock multi-currency wallets and zero-fee international transfers.
-                </p>
-                <button className="w-full bg-white text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 transition-colors">
-                  Upgrade Now
-                </button>
-              </div>
+              {role === "viewer" && (
+                <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[32px] p-6 text-white shadow-lg shadow-blue-100">
+                  <h4 className="text-sm font-black mb-2">Zorvyn Pro</h4>
+                  <p className="text-[10px] leading-relaxed opacity-80 mb-4 font-medium">
+                    Upgrade to Pro to unlock multi-currency wallets and zero-fee international transfers.
+                  </p>
+                  <button className="w-full bg-white text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-50 transition-colors">
+                    Upgrade Now
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

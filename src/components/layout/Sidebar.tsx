@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useRole } from "../../context/RoleContext";
 import { 
   LayoutDashboard, 
   ListOrdered, 
@@ -16,6 +17,7 @@ import {
 
 export default function Sidebar() {
   const location = useLocation();
+  const { role } = useRole();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -110,7 +112,7 @@ export default function Sidebar() {
 
         {/* Bottom Section: Premium Promo */}
         <div className="flex flex-col gap-4">
-          {!isCollapsed ? (
+          {role === "viewer" && !isCollapsed ? (
             <div className="bg-amber-400 rounded-[32px] p-6 text-white text-center flex flex-col items-center gap-4 relative overflow-hidden">
               <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm">
                 <Cloud size={24} />
@@ -125,13 +127,13 @@ export default function Sidebar() {
                 Upgrade Now &rarr;
               </button>
             </div>
-          ) : (
+          ) : role === "viewer" ? (
              <div className="flex justify-center">
                 <div className="h-10 w-10 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 cursor-help">
                   <Cloud size={20} />
                 </div>
              </div>
-          )}
+          ) : null}
         </div>
       </aside>
 
