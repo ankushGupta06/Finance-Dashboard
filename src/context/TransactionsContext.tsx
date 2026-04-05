@@ -1,59 +1,106 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
-  type Dispatch,
+  useEffect,
+  useCallback,
   type ReactNode,
-  type SetStateAction,
 } from "react";
-import { transactions as seededTransactions } from "../data/transactions";
-
-type TransactionRecord = (typeof seededTransactions)[number];
+import {
+  transactionsApi,
+  type TransactionRecord,
+} from "../api/transactions";
 
 type TransactionsContextValue = {
   transactions: TransactionRecord[];
-  setTransactions: Dispatch<SetStateAction<TransactionRecord[]>>;
+  isLoading: boolean;
+  refreshTransactions: () => Promise<void>;
+  createTransaction: (transaction: TransactionRecord) => Promise<void>;
+  updateTransaction: (
+    transactionId: string,
+    updates: Partial<TransactionRecord>,
+  ) => Promise<void>;
+  deleteTransaction: (transactionId: string) => Promise<void>;
 };
-
-const STORAGE_KEY = "zorvyn-transactions";
 
 const TransactionsContext = createContext<TransactionsContextValue | null>(null);
-
-const getInitialTransactions = () => {
-  const savedTransactions = localStorage.getItem(STORAGE_KEY);
-
-  if (!savedTransactions) {
-    return seededTransactions;
-  }
-
-  try {
-    const parsedTransactions = JSON.parse(savedTransactions);
-    return Array.isArray(parsedTransactions) ? parsedTransactions : seededTransactions;
-  } catch {
-    return seededTransactions;
-  }
-};
 
 export const TransactionsProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const [transactions, setTransactions] =
-    useState<TransactionRecord[]>(getInitialTransactions);
+  const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshTransactions = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const nextTransactions = await transactionsApi.getTransactions();
+      setTransactions(nextTransactions);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const createTransaction = useCallback(async (transaction: TransactionRecord) => {
+    setIsLoading(true);
+    try {
+      await transactionsApi.createTransaction(transaction);
+      const nextTransactions = await transactionsApi.getTransactions();
+      setTransactions(nextTransactions);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const updateTransaction = useCallback(
+    async (transactionId: string, updates: Partial<TransactionRecord>) => {
+      setIsLoading(true);
+      try {
+        await transactionsApi.updateTransaction(transactionId, updates);
+        const nextTransactions = await transactionsApi.getTransactions();
+        setTransactions(nextTransactions);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
+
+  const deleteTransaction = useCallback(async (transactionId: string) => {
+    setIsLoading(true);
+    try {
+      await transactionsApi.deleteTransaction(transactionId);
+      const nextTransactions = await transactionsApi.getTransactions();
+      setTransactions(nextTransactions);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-  }, [transactions]);
+    void refreshTransactions();
+  }, [refreshTransactions]);
 
   const value = useMemo(
     () => ({
       transactions,
-      setTransactions,
+      isLoading,
+      refreshTransactions,
+      createTransaction,
+      updateTransaction,
+      deleteTransaction,
     }),
-    [transactions],
+    [
+      transactions,
+      isLoading,
+      refreshTransactions,
+      createTransaction,
+      updateTransaction,
+      deleteTransaction,
+    ],
   );
 
   return (

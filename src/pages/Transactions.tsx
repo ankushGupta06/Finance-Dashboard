@@ -38,8 +38,13 @@ const getEmptyFormState = (): {
 export default function TransactionsPage() {
   const { role } = useRole();
   const { addAlert } = useAlert();
-  const { transactions: localTransactions, setTransactions: setLocalTransactions } =
-    useTransactions();
+  const {
+    transactions: localTransactions,
+    isLoading,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
+  } = useTransactions();
 
   const ITEMS_PER_PAGE = 8;
   const [currentPage, setCurrentPage] = useState(1);
@@ -158,7 +163,7 @@ export default function TransactionsPage() {
     });
   };
 
-  const handleAddTransaction = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -206,25 +211,16 @@ export default function TransactionsPage() {
       };
 
       if (editingTransaction) {
-        setLocalTransactions((prev) =>
-          prev.map((transaction) =>
-            transaction.id === editingTransaction.id
-              ? {
-                  ...transaction,
-                  ...baseTransaction,
-                }
-              : transaction,
-          ),
-        );
+        await updateTransaction(editingTransaction.id, baseTransaction);
         addAlert("Transaction updated successfully.", "success");
       } else {
-        const newTx = {
+        const newTx: TransactionRecord = {
           id: `t-${Date.now()}`,
           ...baseTransaction,
           createdAt: new Date().toISOString(),
         };
 
-        setLocalTransactions((prev) => [newTx, ...prev]);
+        await createTransaction(newTx);
         addAlert("Transaction added successfully.", "success");
       }
 
@@ -236,13 +232,15 @@ export default function TransactionsPage() {
     }
   };
 
-  const handleDeleteTransaction = (transactionId: string) => {
-    setLocalTransactions((prev) =>
-      prev.filter((transaction) => transaction.id !== transactionId),
-    );
-
-    setCurrentPage(1);
-    addAlert("Transaction deleted successfully.", "success");
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await deleteTransaction(transactionId);
+      setCurrentPage(1);
+      addAlert("Transaction deleted successfully.", "success");
+    } catch (error) {
+      console.error(error);
+      addAlert("Something went wrong while deleting the transaction.", "error");
+    }
   };
 
   const exportToCSV = () => {
@@ -373,54 +371,64 @@ export default function TransactionsPage() {
           </div>
 
           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
-            <TransactionList
-              transactions={paginatedTransactions}
-              categories={categories}
-              role={role}
-              onEdit={openEditModal}
-              onDelete={handleDeleteTransaction}
-            />
-
-            {filteredTransactions.length > ITEMS_PER_PAGE && (
-              <div className="flex flex-col sm:flex-row items-center justify-between mt-8 pt-6 border-t border-gray-50 gap-4">
-                <p className="text-xs font-bold text-gray-400">
-                  Showing <span className="text-gray-800">{startIndex + 1}-{startIndex + paginatedTransactions.length}</span> of {filteredTransactions.length} transactions
+            {isLoading ? (
+              <div className="py-20 text-center">
+                <p className="text-sm font-bold text-gray-400">
+                  Loading transactions...
                 </p>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    disabled={safeCurrentPage === 1}
-                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                    className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-
-                  <div className="flex gap-1">
-                    {[...Array(totalPages)].map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i + 1)}
-                        className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
-                          safeCurrentPage === i + 1
-                            ? "bg-blue-600 text-white shadow-md shadow-blue-100"
-                            : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
-                        }`}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    disabled={safeCurrentPage === totalPages}
-                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                    className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
               </div>
+            ) : (
+              <>
+                <TransactionList
+                  transactions={paginatedTransactions}
+                  categories={categories}
+                  role={role}
+                  onEdit={openEditModal}
+                  onDelete={handleDeleteTransaction}
+                />
+
+                {filteredTransactions.length > ITEMS_PER_PAGE && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between mt-8 pt-6 border-t border-gray-50 gap-4">
+                    <p className="text-xs font-bold text-gray-400">
+                      Showing <span className="text-gray-800">{startIndex + 1}-{startIndex + paginatedTransactions.length}</span> of {filteredTransactions.length} transactions
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={safeCurrentPage === 1}
+                        onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                        className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
+                      >
+                        <ChevronLeft size={18} />
+                      </button>
+
+                      <div className="flex gap-1">
+                        {[...Array(totalPages)].map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
+                              safeCurrentPage === i + 1
+                                ? "bg-blue-600 text-white shadow-md shadow-blue-100"
+                                : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                            }`}
+                          >
+                            {i + 1}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        disabled={safeCurrentPage === totalPages}
+                        onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                        className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
+                      >
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -523,9 +531,14 @@ export default function TransactionsPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-4 rounded-[20px] font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all"
+                  disabled={isLoading}
+                  className="w-full bg-blue-600 text-white py-4 rounded-[20px] font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {editingTransaction ? "Update Transaction" : "Save Transaction"}
+                  {isLoading
+                    ? "Saving..."
+                    : editingTransaction
+                      ? "Update Transaction"
+                      : "Save Transaction"}
                 </button>
               </form>
             </div>

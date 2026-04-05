@@ -272,7 +272,7 @@ export const transactions = [
     mode: "UPI",
     date: "2026-04-03",
     note: "Dinner",
-    createdAt: "2026-04-07T20:00:00Z",
+    createdAt: "2026-04-03T20:00:00Z",
   },
   {
     id: "t11",
@@ -283,7 +283,7 @@ export const transactions = [
     mode: "UPI",
     date: "2026-04-02",
     note: "Fuel",
-    createdAt: "2026-04-08T08:20:00Z",
+    createdAt: "2026-04-02T08:20:00Z",
   },
   {
     id: "t12",
@@ -294,7 +294,7 @@ export const transactions = [
     mode: "bank",
     date: "2026-04-02",
     note: "Project Payout",
-    createdAt: "2026-04-09T13:40:00Z",
+    createdAt: "2026-04-02T13:40:00Z",
   },
   {
     id: "t13",
@@ -305,7 +305,7 @@ export const transactions = [
     mode: "card",
     date: "2026-04-1",
     note: "Accessories",
-    createdAt: "2026-04-10T16:10:00Z",
+    createdAt: "2026-04-1T16:10:00Z",
   },
   {
     id: "t14",
@@ -316,7 +316,7 @@ export const transactions = [
     mode: "cash",
     date: "2026-04-1",
     note: "Snacks",
-    createdAt: "2026-04-11T17:00:00Z",
+    createdAt: "2026-04-1T17:00:00Z",
   },
   {
     id: "t15",
@@ -327,7 +327,7 @@ export const transactions = [
     mode: "UPI",
     date: "2026-04-1",
     note: "Cab",
-    createdAt: "2026-04-11T21:35:00Z",
+    createdAt: "2026-04-1T21:35:00Z",
   },
   {
     id: "t16",
@@ -338,7 +338,7 @@ export const transactions = [
     mode: "bank",
     date: "2026-04-2",
     note: "Consulting",
-    createdAt: "2026-04-12T11:50:00Z",
+    createdAt: "2026-04-2T11:50:00Z",
   },
   {
     id: "t17",
@@ -349,7 +349,7 @@ export const transactions = [
     mode: "card",
     date: "2026-04-3",
     note: "Home Decor",
-    createdAt: "2026-04-13T14:05:00Z",
+    createdAt: "2026-04-3T14:05:00Z",
   },
   {
     id: "t18",
@@ -360,7 +360,7 @@ export const transactions = [
     mode: "cash",
     date: "2026-04-4",
     note: "Coffee",
-    createdAt: "2026-04-14T09:10:00Z",
+    createdAt: "2026-04-4T09:10:00Z",
   },
   {
     id: "t19",
@@ -371,7 +371,7 @@ export const transactions = [
     mode: "UPI",
     date: "2026-04-5",
     note: "Commute",
-    createdAt: "2026-04-15T08:55:00Z",
+    createdAt: "2026-04-5T08:55:00Z",
   },
   {
     id: "t20",
@@ -382,6 +382,6 @@ export const transactions = [
     mode: "bank",
     date: "2026-04-5",
     note: "Incentive",
-    createdAt: "2026-04-15T18:25:00Z",
+    createdAt: "2026-04-5T18:25:00Z",
   },
 ];
