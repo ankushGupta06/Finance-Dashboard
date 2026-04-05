@@ -43,7 +43,7 @@ export default function AccountsPage() {
 
             <button
               onClick={addTemporaryCard}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2"
             >
               <Plus size={18} />
               Add New Card
@@ -118,7 +118,7 @@ export default function AccountsPage() {
                         Limits
                       </p>
                       <p className="text-[10px] text-gray-400 dark:text-slate-400 font-medium">
-                        Monthly cap: Rs 50,000
+                        Monthly cap: Rs {(allAccounts[0]?.creditLimit ?? 0).toLocaleString()}
                       </p>
                     </div>
                   </div>

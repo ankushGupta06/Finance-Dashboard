@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRole } from "../../context/RoleContext";
+import logo from "../../assets/logo.png";
 import { 
   LayoutDashboard, 
   ListOrdered, 
@@ -8,7 +9,7 @@ import {
   Receipt, 
   Target, 
   Settings, 
-  Cloud, 
+  Cloud,
   ChevronLeft, 
   Menu, 
   X,
@@ -58,8 +59,12 @@ export default function Sidebar() {
           {/* Top Section: Logo + Collapse Button */}
           <div className={`flex items-center justify-between mb-12 px-1`}>
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2.5 rounded-2xl flex-shrink-0">
-                <Cloud className="text-white h-5 w-5" />
+              <div className="h-11 w-11 overflow-hidden rounded-2xl flex-shrink-0 bg-blue-600">
+                <img
+                  src={logo}
+                  alt="Zorvyn logo"
+                  className="h-full w-full object-cover"
+                />
               </div>
               {!isCollapsed && (
                 <h1 className="text-xl font-black text-gray-800 dark:text-white tracking-tight whitespace-nowrap">

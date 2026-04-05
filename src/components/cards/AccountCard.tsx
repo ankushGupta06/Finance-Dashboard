@@ -1,8 +1,27 @@
 import { useState } from "react";
 import { Cloud, ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import { transactions } from "../../data/transactions";
+import { user } from "../../data/users";
 
-export default function AccountCard({ account }: any) {
+type AccountCardProps = {
+  account: any;
+  isActive?: boolean;
+  onToggleActive?: () => void;
+};
+
+export default function AccountCard({
+  account,
+  isActive = true,
+  onToggleActive,
+}: AccountCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const accountTransactions = transactions.filter((tx) => tx.accountId === account.id);
+  const income = accountTransactions
+    .filter((tx) => tx.type === "income")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  const expense = accountTransactions
+    .filter((tx) => tx.type === "expense")
+    .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-start gap-8 md:gap-12 w-full max-w-full overflow-hidden px-2">
@@ -12,7 +31,7 @@ export default function AccountCard({ account }: any) {
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div className="absolute inset-0 backface-hidden">
-            <div className="bg-blue-600 w-full h-full rounded-[24px] md:rounded-[32px] p-6 md:p-8 text-white shadow-[0_24px_60px_rgba(59,130,246,0.22)] dark:shadow-[0_24px_60px_rgba(2,6,23,0.55)] overflow-hidden relative">
+            <div className="bg-blue-600 w-full h-full rounded-[24px] md:rounded-[32px] p-6 md:p-8 text-white overflow-hidden relative">
               <Cloud className="absolute -right-6 md:-right-10 -bottom-6 md:-bottom-10 h-32 w-32 md:h-48 md:w-48 opacity-10" />
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
@@ -26,7 +45,7 @@ export default function AccountCard({ account }: any) {
                   <div className="flex gap-6 md:gap-10">
                     <div>
                       <p className="text-[8px] md:text-[9px] uppercase opacity-50 mb-0.5 md:mb-1 font-bold">Card Holder</p>
-                      <p className="text-xs md:text-sm font-bold tracking-wide">Ankush Gupta</p>
+                      <p className="text-xs md:text-sm font-bold tracking-wide">{user.name}</p>
                     </div>
                     <div>
                       <p className="text-[8px] md:text-[9px] uppercase opacity-50 mb-0.5 md:mb-1 font-bold">Expire Date</p>
@@ -39,7 +58,7 @@ export default function AccountCard({ account }: any) {
           </div>
 
           <div className="absolute inset-0 backface-hidden rotate-y-180">
-            <div className="bg-slate-800 w-full h-full rounded-[24px] md:rounded-[32px] text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)] dark:shadow-[0_24px_60px_rgba(2,6,23,0.6)] overflow-hidden relative flex flex-col justify-between py-6 md:py-8">
+            <div className="bg-slate-800 w-full h-full rounded-[24px] md:rounded-[32px] text-white overflow-hidden relative flex flex-col justify-between py-6 md:py-8">
               <div className="bg-black w-full h-10 md:h-12 mt-2 md:mt-4 opacity-80" />
               <div className="px-6 md:px-8 flex justify-between items-end">
                 <div className="flex-1">
@@ -91,24 +110,35 @@ export default function AccountCard({ account }: any) {
           <div className="flex items-center gap-3 md:gap-4">
             <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl md:rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-500 dark:text-green-300 font-black text-xs md:text-base">Rs</div>
             <div>
-              <p className="text-xs md:text-sm font-black text-green-500 dark:text-green-300 leading-none">15,000</p>
+              <p className="text-xs md:text-sm font-black text-green-500 dark:text-green-300 leading-none">{income.toLocaleString()}</p>
               <p className="text-[9px] md:text-[10px] font-black text-gray-300 dark:text-slate-400 uppercase mt-1">Income</p>
             </div>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
             <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl md:rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-300 font-black text-xs md:text-base">Rs</div>
             <div>
-              <p className="text-xs md:text-sm font-black text-red-500 dark:text-red-300 leading-none">3,500</p>
+              <p className="text-xs md:text-sm font-black text-red-500 dark:text-red-300 leading-none">{expense.toLocaleString()}</p>
               <p className="text-[9px] md:text-[10px] font-black text-gray-300 dark:text-slate-400 uppercase mt-1">Outcome</p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-slate-700 w-full justify-center sm:justify-start">
-          <button className="w-10 h-6 bg-blue-600 rounded-full relative p-1 transition-colors">
-            <div className="absolute right-1 top-1 h-4 w-4 bg-white rounded-full shadow-sm"></div>
+          <button
+            onClick={onToggleActive}
+            className={`w-10 h-6 rounded-full relative p-1 transition-colors ${
+              isActive ? "bg-blue-600" : "bg-gray-300 dark:bg-slate-600"
+            }`}
+          >
+            <div
+              className={`absolute top-1 h-4 w-4 bg-white rounded-full shadow-sm transition-all ${
+                isActive ? "right-1" : "left-1"
+              }`}
+            ></div>
           </button>
-          <span className="text-[10px] font-black text-gray-400 dark:text-slate-300 uppercase tracking-wider">Active</span>
+          <span className="text-[10px] font-black text-gray-400 dark:text-slate-300 uppercase tracking-wider">
+            {isActive ? "Active" : "Inactive"}
+          </span>
         </div>
       </div>
     </div>

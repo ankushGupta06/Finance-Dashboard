@@ -34,6 +34,47 @@ export default function InsightsPage() {
   const expense = expenseTx.reduce((acc, t) => acc + t.amount, 0);
   const savings = income - expense;
   const savingsRate = income > 0 ? Math.round((savings / income) * 100) : 0;
+  const latestExpenseDate = expenseTx.reduce<Date | null>((latest, tx) => {
+    const current = new Date(tx.date);
+    return !latest || current > latest ? current : latest;
+  }, null);
+  const historyBaseDate = latestExpenseDate ?? new Date();
+  const monthlyHistory = Array.from({ length: 4 }, (_, index) => {
+    const date = new Date(
+      historyBaseDate.getFullYear(),
+      historyBaseDate.getMonth() - (3 - index),
+      1,
+    );
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    const amount = expenseTx
+      .filter((tx) => tx.date.slice(0, 7) === key)
+      .reduce((sum, tx) => sum + tx.amount, 0);
+
+    return {
+      key,
+      month: date.toLocaleDateString("en-US", { month: "short" }),
+      amount,
+    };
+  });
+  const maxMonthlyExpense = Math.max(...monthlyHistory.map((item) => item.amount), 1);
+  const monthlyHistoryWithTrend = monthlyHistory.map((item, index) => {
+    const previousAmount = index > 0 ? monthlyHistory[index - 1].amount : 0;
+    const rawChangePercent =
+      index === 0
+        ? 0
+        : previousAmount > 0
+          ? Math.round(((item.amount - previousAmount) / previousAmount) * 100)
+          : item.amount > 0
+            ? 100
+            : 0;
+
+    return {
+      ...item,
+      trend: rawChangePercent <= 0 ? "up" : "down",
+      changePercent: Math.abs(rawChangePercent),
+      barHeight: Math.max(12, Math.round((item.amount / maxMonthlyExpense) * 100)),
+    };
+  });
 
   return (
     <div className="flex bg-surface min-h-screen transition-colors">
@@ -106,35 +147,27 @@ export default function InsightsPage() {
 
                 {/* Small Month Summary Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                  {[
-                    { month: "Jan", amount: 42000, trend: "down" },
-                    { month: "Feb", amount: 38500, trend: "down" },
-                    { month: "Mar", amount: 45000, trend: "up" },
-                    {
-                      month: "Apr",
-                      amount: expense,
-                      trend: expense > 45000 ? "up" : "down",
-                    },
-                  ].map((data, i) => (
+                  {monthlyHistoryWithTrend.map((data) => (
                     <div
-                      key={i}
+                      key={data.key}
                       className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 hover:bg-white hover:shadow-md transition-all group"
                     >
-                      <p className="text-[10px] font-black text-gray-300 uppercase mb-1">
+                      <p className="text-xs md:text-sm font-black text-gray-300 uppercase mb-2">
                         {data.month}
                       </p>
-                      <p className="text-lg font-black text-gray-800">
+                      <p className="text-xl md:text-2xl font-black text-gray-800">
                         ₹{data.amount.toLocaleString()}
                       </p>
                       <div
-                        className={`mt-2 flex items-center gap-1 text-[9px] font-bold ${data.trend === "up" ? "text-red-500" : "text-green-500"}`}
+                        className={`mt-3 flex items-center gap-1.5 text-xs md:text-sm font-bold ${data.trend === "up" ? "text-red-500" : "text-green-500"}`}
                       >
                         {data.trend === "up" ? (
-                          <TrendingUp size={10} />
+                          <TrendingUp size={12} />
                         ) : (
-                          <TrendingDown size={10} />
+                          <TrendingDown size={12} />
                         )}
-                        {data.trend === "up" ? "+2.4%" : "-1.8%"}
+                        {data.changePercent > 0 ? "+" : ""}
+                        {data.changePercent}%
                       </div>
                     </div>
                   ))}
@@ -143,20 +176,15 @@ export default function InsightsPage() {
                 {/* Historical Bar Graph */}
                 <div className="space-y-6">
                   <div className="flex items-end justify-between gap-4 h-64 px-6 pt-10 pb-2 bg-gray-50/50 rounded-[32px] border border-dashed border-gray-200">
-                    {[
-                      { val: 65, label: "Jan", amount: "42k" },
-                      { val: 55, label: "Feb", amount: "38k" },
-                      { val: 85, label: "Mar", amount: "45k" },
-                      { val: 100, label: "Apr", amount: "Active" },
-                    ].map((bar, i) => (
+                    {monthlyHistoryWithTrend.map((bar, i) => (
                       <div
-                        key={i}
+                        key={bar.key}
                         className="flex-1 flex flex-col items-center justify-end h-full group"
                       >
                         {/* Value Label on Hover */}
                         <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <span className="bg-gray-800 text-white text-[10px] py-1 px-2 rounded-lg font-bold shadow-lg">
-                            {bar.amount}
+                            Rs {bar.amount.toLocaleString()}
                           </span>
                         </div>
 
@@ -164,21 +192,21 @@ export default function InsightsPage() {
                         <div
                           className={`w-full max-w-[45px] rounded-t-2xl transition-all duration-1000 ease-out shadow-sm
             ${
-              i === 3
+              i === monthlyHistoryWithTrend.length - 1
                 ? "bg-blue-600 shadow-blue-100"
                 : "bg-blue-100 group-hover:bg-blue-200"
             }`}
                           style={{
-                            height: `${bar.val}%`,
+                            height: `${bar.barHeight}%`,
                             minHeight: "4px", // Ensures it's never "invisible"
                           }}
                         />
 
                         {/* Month Label */}
                         <span
-                          className={`text-[11px] font-black mt-4 mb-2 ${i === 3 ? "text-blue-600" : "text-gray-400"}`}
+                          className={`text-[11px] font-black mt-4 mb-2 ${i === monthlyHistoryWithTrend.length - 1 ? "text-blue-600" : "text-gray-400"}`}
                         >
-                          {bar.label}
+                          {bar.month}
                         </span>
                       </div>
                     ))}
@@ -190,7 +218,7 @@ export default function InsightsPage() {
             {/* Column 3: Observations & Highlights */}
             <div className="space-y-6">
               {/* Top Category Observation */}
-              <div className="bg-amber-500 rounded-[32px] p-8 text-white shadow-xl shadow-amber-100">
+              <div className="bg-amber-500 rounded-[32px] p-8 text-white">
                 <TrendingUp size={32} className="mb-6 opacity-80" />
                 <p className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">
                   Top Spending

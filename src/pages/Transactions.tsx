@@ -186,7 +186,7 @@ export default function TransactionsPage() {
               {role === "admin" && (
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all"
                 >
                   <Plus size={16} />
                   Add Transaction

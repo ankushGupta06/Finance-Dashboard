@@ -3,10 +3,13 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import { useRole } from "../context/RoleContext";
+import { useTheme } from "../context/ThemeContext";
 import AccountCard from "../components/cards/AccountCard";
 import SpendingLineChart from "../components/charts/SpendingLineChart";
 import ExpensePieChart from "../components/charts/ExpensePieChart";
 import { accounts as initialAccounts } from "../data/accounts";
+import { categories } from "../data/categories";
+import { transactions } from "../data/transactions";
 import {
   Plus,
   ArrowUpRight,
@@ -15,14 +18,50 @@ import {
   Settings,
   Snowflake,
   ChevronRight,
+  TrendingUp,
+  Clock3,
+  Sparkles,
 } from "lucide-react";
 
 export default function DashboardPage() {
   const [allAccounts] = useState(initialAccounts);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isCardFrozen, setIsCardFrozen] = useState(false);
+  const [isCardActive, setIsCardActive] = useState(true);
   const { role } = useRole();
+  const { theme } = useTheme();
 
   const mainAccount = allAccounts[0];
+  const totalIncome = transactions
+    .filter((tx) => tx.type === "income")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  const totalExpense = transactions
+    .filter((tx) => tx.type === "expense")
+    .reduce((sum, tx) => sum + tx.amount, 0);
+  const isCardBlurred = isCardFrozen || !isCardActive;
+  const recentTransactions = transactions
+    .slice()
+    .sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 4);
+  const expenseByCategory = transactions
+    .filter((tx) => tx.type === "expense")
+    .reduce<Record<string, number>>((acc, tx) => {
+      acc[tx.categoryId] = (acc[tx.categoryId] || 0) + tx.amount;
+      return acc;
+    }, {});
+  const topExpenseCategoryId = Object.keys(expenseByCategory).reduce<string | null>(
+    (topId, currentId) => {
+      if (!topId) return currentId;
+      return expenseByCategory[currentId] > expenseByCategory[topId]
+        ? currentId
+        : topId;
+    },
+    null,
+  );
+  const topExpenseCategory = categories.find((cat) => cat.id === topExpenseCategoryId);
+  const netFlow = totalIncome - totalExpense;
 
   return (
     <div className="flex bg-surface min-h-screen transition-colors">
@@ -53,7 +92,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Income</p>
-                  <h3 className="text-2xl font-black text-gray-800 tracking-tight">Rs 15,000</h3>
+                  <h3 className="text-2xl font-black text-gray-800 tracking-tight">Rs {totalIncome.toLocaleString()}</h3>
                 </div>
               </div>
             </div>
@@ -65,7 +104,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Expense</p>
-                  <h3 className="text-2xl font-black text-gray-800 tracking-tight">Rs 3,500</h3>
+                  <h3 className="text-2xl font-black text-gray-800 tracking-tight">Rs {totalExpense.toLocaleString()}</h3>
                 </div>
               </div>
             </div>
@@ -83,14 +122,22 @@ export default function DashboardPage() {
                 </button>
               </div>
 
-              <div className="perspective-1000 relative w-full group">
+              <div
+                className={`perspective-1000 relative w-full group transition-all duration-300 ${
+                  isCardBlurred ? "blur-sm opacity-70" : ""
+                }`}
+              >
                 <div className="invisible pointer-events-none w-full">
-                  <AccountCard account={mainAccount} />
+                  <AccountCard account={mainAccount} isActive={isCardActive} />
                 </div>
 
                 <div className={`absolute inset-0 transition-all duration-700 preserve-3d ${isFlipped ? "rotate-y-180" : ""}`}>
                   <div className="absolute inset-0 backface-hidden">
-                    <AccountCard account={mainAccount} />
+                    <AccountCard
+                      account={mainAccount}
+                      isActive={isCardActive}
+                      onToggleActive={() => setIsCardActive((prev) => !prev)}
+                    />
                   </div>
 
                   <div className="absolute inset-0 backface-hidden rotate-y-180">
@@ -108,9 +155,16 @@ export default function DashboardPage() {
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-4">
-                <button className="flex items-center justify-center gap-3 bg-white border border-gray-100 py-4 rounded-2xl font-bold text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all group">
+                <button
+                  onClick={() => setIsCardFrozen((prev) => !prev)}
+                  className={`flex items-center justify-center gap-3 bg-white border py-4 rounded-2xl font-bold text-sm transition-all group ${
+                    isCardFrozen
+                      ? "border-red-200 bg-red-50 text-red-500"
+                      : "border-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-500 hover:border-red-100"
+                  }`}
+                >
                   <Snowflake size={18} className="group-hover:animate-pulse" />
-                  Freeze Card
+                  {isCardFrozen ? "Unfreeze Card" : "Freeze Card"}
                 </button>
                 <button className="flex items-center justify-center gap-3 bg-white border border-gray-100 py-4 rounded-2xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-all">
                   <Settings size={18} />
@@ -167,6 +221,115 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-10">
             <SpendingLineChart />
             <ExpensePieChart />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-[1.25fr_0.9fr] gap-6 mt-10">
+            <div className="bg-white dark:bg-slate-800 rounded-[36px] p-8 border border-gray-50 dark:border-slate-700 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-[10px] font-black text-gray-300 dark:text-slate-400 uppercase tracking-[0.2em]">
+                    Recent Activity
+                  </p>
+                  <h3 className="text-xl font-black text-gray-800 dark:text-slate-100 mt-2 tracking-tight">
+                    Latest Transactions
+                  </h3>
+                </div>
+                <div className="h-11 w-11 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 flex items-center justify-center">
+                  <Clock3 size={20} />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {recentTransactions.map((tx) => {
+                  const category = categories.find((cat) => cat.id === tx.categoryId);
+                  const isIncome = tx.type === "income";
+
+                  return (
+                    <div
+                      key={tx.id}
+                      className={`flex items-center justify-between gap-4 rounded-[24px] px-4 py-4 ${
+                        theme === "dark"
+                          ? "border border-transparent bg-transparent"
+                          : "border border-gray-100 bg-gray-50/60"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-black text-gray-800 dark:text-slate-100 truncate">
+                          {tx.note}
+                        </p>
+                        <p className="mt-1 text-[10px] font-bold uppercase tracking-wide text-gray-400 dark:text-slate-400">
+                          {category?.name || "Other"} • {tx.date}
+                        </p>
+                      </div>
+                      <p
+                        className={`shrink-0 text-sm font-black ${
+                          isIncome ? "text-green-500 dark:text-green-300" : "text-gray-800 dark:text-slate-100"
+                        }`}
+                      >
+                        {isIncome ? "+" : "-"}Rs {tx.amount.toLocaleString()}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-white dark:bg-slate-800 rounded-[36px] p-8 border border-gray-50 dark:border-slate-700 shadow-sm">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-11 w-11 rounded-2xl bg-amber-50 dark:bg-amber-900/30 text-amber-500 dark:text-amber-300 flex items-center justify-center">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-gray-300 dark:text-slate-400 uppercase tracking-[0.2em]">
+                      Smart Note
+                    </p>
+                    <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 mt-1 tracking-tight">
+                      Snapshot
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div
+                    className={`rounded-[24px] p-4 ${
+                      theme === "dark"
+                        ? "border border-transparent bg-transparent"
+                        : "border border-transparent bg-gray-50/70"
+                    }`}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-300 dark:text-slate-400 mb-2">
+                      Net Flow
+                    </p>
+                    <p
+                      className={`text-2xl font-black ${
+                        netFlow >= 0 ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      Rs {Math.abs(netFlow).toLocaleString()}
+                    </p>
+                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-2">
+                      {netFlow >= 0 ? "You are cash-flow positive this cycle." : "Spending is ahead of income right now."}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[24px] bg-blue-600 text-white p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp size={16} />
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-70">
+                        Top Category
+                      </p>
+                    </div>
+                    <p className="text-lg font-black">
+                      {topExpenseCategory?.name || "No category"}
+                    </p>
+                    <p className="text-xs opacity-80 mt-2">
+                      Rs {(topExpenseCategoryId ? expenseByCategory[topExpenseCategoryId] : 0).toLocaleString()} spent in your biggest expense bucket.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </Container>
