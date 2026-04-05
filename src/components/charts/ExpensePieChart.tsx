@@ -23,9 +23,9 @@ export default function ExpensePieChart() {
   const totalExpense = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className="bg-white p-8 rounded-[32px] border border-gray-50 shadow-sm h-[400px] flex flex-col">
-      <h3 className="text-lg font-black text-gray-800 mb-2 tracking-tight">Spending Breakdown</h3>
-      <p className="text-xs text-gray-400 mb-5">Category split from mock expenses</p>
+    <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-gray-50 dark:border-slate-700 shadow-sm h-[400px] flex flex-col">
+      <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 mb-2 tracking-tight">Spending Breakdown</h3>
+      <p className="text-xs text-gray-400 dark:text-slate-400 mb-5">Category split from mock expenses</p>
       <div className="flex-1 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -58,7 +58,7 @@ export default function ExpensePieChart() {
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <p className="text-xs font-semibold text-gray-500 mt-3">
+      <p className="text-xs font-semibold text-gray-500 dark:text-slate-300 mt-3">
         Total Expense: Rs {totalExpense.toLocaleString()}
       </p>
     </div>

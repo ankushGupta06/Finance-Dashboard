@@ -2,7 +2,7 @@ import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
 import Badge from "../components/ui/Badge";
-import { Download, FileText, Filter, Search } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 
 const mockInvoices = [
   { id: "INV-001", vendor: "Amazon Web Services", date: "Mar 12, 2026", amount: 1250.00, status: "paid" },
@@ -13,7 +13,7 @@ const mockInvoices = [
 
 export default function InvoicesPage() {
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
       <Container>
         <Header />

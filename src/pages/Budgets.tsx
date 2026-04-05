@@ -13,7 +13,7 @@ export default function BudgetsPage() {
   const totalPercent = Math.round((totalSpent / totalLimit) * 100);
 
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
 
       <Container>

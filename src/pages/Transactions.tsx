@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import Container from "../components/layout/Container";
@@ -55,11 +55,8 @@ export default function TransactionsPage() {
     Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE),
   );
 
-  useEffect(() => {
-    setCurrentPage((prev) => Math.min(prev, totalPages));
-  }, [totalPages]);
-
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
   const paginatedTransactions = filteredTransactions.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE,
@@ -161,7 +158,7 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
       <Container>
         <Header />
@@ -240,8 +237,8 @@ export default function TransactionsPage() {
 
                 <div className="flex items-center gap-2">
                   <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    disabled={safeCurrentPage === 1}
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
                   >
                     <ChevronLeft size={18} />
@@ -253,7 +250,7 @@ export default function TransactionsPage() {
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
                         className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
-                          currentPage === i + 1
+                          safeCurrentPage === i + 1
                             ? "bg-blue-600 text-white shadow-md shadow-blue-100"
                             : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
                         }`}
@@ -264,8 +261,8 @@ export default function TransactionsPage() {
                   </div>
 
                   <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    disabled={safeCurrentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     className="p-2 rounded-xl border border-gray-100 disabled:opacity-20 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-gray-600"
                   >
                     <ChevronRight size={18} />
@@ -365,3 +362,4 @@ export default function TransactionsPage() {
     </div>
   );
 }
+

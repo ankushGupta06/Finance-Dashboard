@@ -30,9 +30,9 @@ const lineData = Object.entries(byDate)
 
 export default function SpendingLineChart() {
   return (
-    <div className="bg-white p-8 rounded-[32px] border border-gray-50 shadow-sm h-[400px] flex flex-col">
-      <h3 className="text-lg font-black text-gray-800 mb-2 tracking-tight">Expense Trend</h3>
-      <p className="text-xs text-gray-400 mb-5">Last 10 days from mock data</p>
+    <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] border border-gray-50 dark:border-slate-700 shadow-sm h-[400px] flex flex-col">
+      <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 mb-2 tracking-tight">Expense Trend</h3>
+      <p className="text-xs text-gray-400 dark:text-slate-400 mb-5">Last 10 days from mock data</p>
       <div className="flex-1 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={lineData} margin={{ left: 4, right: 12, top: 8, bottom: 4 }}>

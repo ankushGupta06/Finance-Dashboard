@@ -9,7 +9,6 @@
   --shadow-soft: 0 20px 50px -12px rgba(0, 0, 0, 0.05);
 
   /* --- Colors Mapping --- */
-  /* This tells Tailwind: "When I use bg-surface, look for the CSS variable --surface" */
   --color-primary: oklch(0.623 0.214 259.815);
   --color-surface: var(--surface);
   --color-card-bg: var(--card-bg);
@@ -19,30 +18,119 @@
 
 /* --- THE ENGINE: Root Variables --- */
 :root {
-  --surface: #F8FAFC;
+  --surface: #eef4ff;
   --card-bg: #ffffff;
   --main-text: #0f172a;
-  --border-subtle: #f1f5f9;
+  --border-subtle: #dde7f5;
 }
 
-/* --- DARK MODE OVERRIDE --- */
-/* High priority selector to ensure variables swap */
+/* --- DARK MODE OVERRIDE (UPDATED) --- */
 .dark, [data-theme='dark'] {
-  --surface: #0f172a;
-  --card-bg: #1e293b;
-  --main-text: #f8fafc;
-  --border-subtle: #334155;
-  --shadow-soft: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  --surface: #0a0f1c;          /* deep navy base */
+  --card-bg: #121a2b;          /* elevated cards */
+  --main-text: #e6edf7;        /* soft white */
+  --border-subtle: #1f2a44;    /* blue-gray borders */
+  --shadow-soft: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
 }
 
 @layer base {
   body {
     @apply bg-surface text-main-text antialiased transition-colors duration-300;
     margin: 0;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.12), transparent 35%),
+      radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08), transparent 28%);
+    background-attachment: fixed;
   }
 }
 
 @layer utilities {
+  html.dark body {
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.18), transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.12), transparent 35%);
+  }
+
+  .dark .bg-white {
+    background-color: var(--card-bg) !important;
+  }
+
+  .dark .text-gray-900 {
+    color: #f1f5f9 !important;
+  }
+
+  .dark .text-gray-800 {
+    color: var(--main-text) !important;
+  }
+
+  .dark .text-gray-700 {
+    color: #c9d4e8 !important;
+  }
+
+  .dark .text-gray-600 {
+    color: #b3c1da !important;
+  }
+
+  .dark .text-gray-500,
+  .dark .text-gray-400 {
+    color: #9fb0d0 !important;
+  }
+
+  .dark .text-gray-300 {
+    color: #8595b4 !important;
+  }
+
+  .dark .bg-gray-50 {
+    background-color: #1a2438 !important;
+  }
+
+  .dark .bg-gray-50\/50 {
+    background-color: rgba(26, 36, 56, 0.82) !important;
+  }
+
+  .dark .bg-gray-100 {
+    background-color: #22304a !important;
+  }
+
+  .dark .hover\:bg-gray-50:hover {
+    background-color: #22304a !important;
+  }
+
+  .dark .hover\:bg-gray-100:hover {
+    background-color: #2a3a58 !important;
+  }
+
+  .dark .bg-blue-50 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+  }
+
+  .dark .bg-green-50 {
+    background-color: rgba(34, 197, 94, 0.2) !important;
+  }
+
+  .dark .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+  }
+
+  .dark .bg-amber-50 {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+  }
+
+  .dark .border-gray-100,
+  .dark .border-gray-50,
+  .dark .border-gray-200 {
+    border-color: var(--border-subtle) !important;
+  }
+
+  .dark .divide-gray-50\/50 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #24324b !important;
+  }
+
+  .dark .shadow-gray-200\/50 {
+    --tw-shadow-color: rgba(2, 6, 23, 0.45);
+    --tw-shadow: var(--tw-shadow-colored);
+  }
+
   /* 3D Flip Mechanics */
   .perspective-1000 { 
     perspective: 1000px; 

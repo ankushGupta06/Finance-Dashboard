@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRole } from "../../context/RoleContext";
 import {
   Mail,
@@ -17,16 +17,41 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme(); // ✅ global theme
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const notifications = [
+    {
+      id: 1,
+      title: "Budget alert",
+      message: "Groceries spending is 12% higher than last week.",
+      time: "Just now",
+      unread: true,
+    },
+    {
+      id: 2,
+      title: "Monthly report",
+      message: "Your March finance summary is ready to view.",
+      time: "2h ago",
+      unread: false,
+    },
+    {
+      id: 3,
+      title: "Payment received",
+      message: "Salary credit has been added to your account.",
+      time: "Yesterday",
+      unread: false,
+    },
+  ];
 
   return (
     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 px-4 gap-6 animate-in fade-in slide-in-from-top duration-500">
       {/* --- Title Section --- */}
       <div className="w-full lg:w-auto">
         <h2 className="text-2xl md:text-3xl font-black text-gray-800 dark:text-white tracking-tight">
-          Weekly sumup
+          Financial Dashboard
         </h2>
         <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 mt-1 font-medium">
-          Get summary of your weekly online transactions here.
+          Your financial activity at a glance.
         </p>
       </div>
 
@@ -46,10 +71,63 @@ export default function Header() {
             <Mail size={20} />
             <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform"></span>
           </button>
-          <button className="relative p-2.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group">
-            <Bell size={20} />
-            <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 group-hover:animate-ping"></span>
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className="relative p-2.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+            >
+              <Bell size={20} />
+              <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 group-hover:animate-ping"></span>
+            </button>
+
+            {isNotificationsOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsNotificationsOpen(false)}
+                ></div>
+                <div className="absolute right-0 top-full mt-3 w-80 rounded-3xl border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl p-3 z-20 animate-in zoom-in-95 duration-200">
+                  <div className="mb-3 px-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500">
+                      Notifications
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`rounded-2xl border p-3 transition-colors ${
+                          notification.unread
+                            ? "bg-white dark:bg-slate-900 border-blue-100 dark:border-blue-900/70 shadow-sm"
+                            : "bg-gray-100/70 dark:bg-slate-700/60 border-gray-100 dark:border-slate-700"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-black text-gray-800 dark:text-white">
+                                {notification.title}
+                              </p>
+                              {notification.unread && (
+                                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                              )}
+                            </div>
+                            <p className="mt-1 text-[11px] leading-relaxed text-gray-500 dark:text-gray-300">
+                              {notification.message}
+                            </p>
+                          </div>
+                          <span className="shrink-0 text-[10px] font-bold text-gray-400 dark:text-gray-500">
+                            {notification.time}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* --- Custom Enhanced User Dropdown --- */}

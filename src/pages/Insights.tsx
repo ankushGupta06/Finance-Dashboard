@@ -6,12 +6,10 @@ import { categories } from "../data/categories";
 import {
   TrendingUp,
   TrendingDown,
-  Target,
   Calendar,
   Zap,
   ArrowRight,
   Lightbulb,
-  BarChart3,
 } from "lucide-react";
 
 export default function InsightsPage() {
@@ -38,7 +36,7 @@ export default function InsightsPage() {
   const savingsRate = income > 0 ? Math.round((savings / income) * 100) : 0;
 
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
 
       <Container>
@@ -125,7 +123,7 @@ export default function InsightsPage() {
                       <p className="text-[10px] font-black text-gray-300 uppercase mb-1">
                         {data.month}
                       </p>
-                      <p className="text-sm font-black text-gray-800">
+                      <p className="text-lg font-black text-gray-800">
                         ₹{data.amount.toLocaleString()}
                       </p>
                       <div
@@ -255,3 +253,4 @@ export default function InsightsPage() {
     </div>
   );
 }
+

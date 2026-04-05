@@ -15,7 +15,7 @@ export default function GoalsPage() {
   const overallProgress = Math.round((totalSaved / totalTarget) * 100);
 
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
 
       <Container>

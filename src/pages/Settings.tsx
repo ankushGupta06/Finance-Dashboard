@@ -40,14 +40,14 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="flex bg-[#F8FAFC] min-h-screen">
+    <div className="flex bg-surface min-h-screen transition-colors">
       <Sidebar />
       <Container>
         <Header />
         <div className="px-4 pb-10">
           <div className="mb-10">
             <h2 className="text-3xl font-black text-gray-800 tracking-tight">Settings</h2>
-            <p className="text-gray-400 text-sm mt-1">Personalize your cloudcash experience</p>
+            <p className="text-gray-400 text-sm mt-1">Personalize your zorvyn experience</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -111,7 +111,7 @@ export default function SettingsPage() {
                       <div className="mt-2 relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input
-                          defaultValue="ankush@cloudcash.app"
+                          defaultValue="ankush@zorvyn.app"
                           className="w-full bg-gray-50 rounded-2xl pl-10 pr-4 py-3 outline-none border border-transparent focus:border-blue-200"
                         />
                       </div>
@@ -206,3 +206,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

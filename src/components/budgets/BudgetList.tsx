@@ -10,7 +10,7 @@ export default function BudgetList({ budgets, categories }: BudgetListProps) {
     <div className="flex flex-col gap-8">
       {/* Section Header matches the "Outcome Statistics" label in the image */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black text-gray-800 tracking-tight">
+        <h2 className="text-xl font-black text-gray-800 dark:text-slate-100 tracking-tight">
           Outcome Statistics
         </h2>
       </div>
@@ -33,7 +33,7 @@ export default function BudgetList({ budgets, categories }: BudgetListProps) {
 
       {/* Optional "View More" link as seen in high-end dashboards */}
       {budgets.length > 3 && (
-        <button className="text-xs font-bold text-blue-500 uppercase tracking-widest text-left mt-2 hover:text-blue-600 transition-colors">
+        <button className="text-xs font-bold text-blue-500 dark:text-blue-300 uppercase tracking-widest text-left mt-2 hover:text-blue-600 dark:hover:text-blue-200 transition-colors">
           Show all categories &rarr;
         </button>
       )}
