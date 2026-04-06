@@ -5,11 +5,10 @@ import { RoleProvider } from "./context/RoleContext";
 import { AlertProvider } from "./context/AlertContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { TransactionsProvider } from "./context/TransactionsContext";
-import "./index.css"; // <--- ADD THIS LINE!
+import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {/* You only need RoleProvider once, so I've kept it here and removed it from App.tsx */}
     <ThemeProvider>
       <AlertProvider>
         <RoleProvider>

@@ -6,10 +6,11 @@ import { goals } from "../data/goals";
 import { Target, Trophy, TrendingUp, Plus } from "lucide-react";
 
 export default function GoalsPage() {
+  // Split goals by lifecycle state for separate sections.
   const activeGoals = goals.filter(g => g.status === 'active');
   const completedGoals = goals.filter(g => g.status === 'completed');
   
-  // Calculate aggregate progress
+  // Summarize overall progress across all goals.
   const totalSaved = goals.reduce((acc, g) => acc + g.currentAmount, 0);
   const totalTarget = goals.reduce((acc, g) => acc + g.targetAmount, 0);
   const overallProgress = Math.round((totalSaved / totalTarget) * 100);
@@ -22,14 +23,14 @@ export default function GoalsPage() {
         <Header />
 
         <div className="px-4">
-          {/* Hero Header Section */}
+          {/* Page header */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
             <div>
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">Financial Goals</h2>
               <p className="text-gray-400 text-sm mt-1">Track your dreams and milestones</p>
             </div>
             
-            {/* Quick Summary Badge */}
+            {/* Progress summary */}
             <div className="bg-white px-6 py-4 rounded-[32px] border border-gray-100 flex items-center gap-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-50 text-blue-500 rounded-xl">
@@ -55,7 +56,7 @@ export default function GoalsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
             
-            {/* Main Goals Grid (Takes 3/4 width) */}
+            {/* Active and completed goals */}
             <div className="lg:col-span-3 space-y-10">
               <section>
                 <div className="flex items-center gap-3 mb-6">
@@ -71,7 +72,7 @@ export default function GoalsPage() {
                     </div>
                   ))}
                   
-                  {/* Add New Goal Placeholder */}
+                  {/* Placeholder action for future goal creation */}
                   <button className="border-2 border-dashed border-gray-100 rounded-[32px] flex flex-col items-center justify-center p-8 text-gray-300 hover:text-blue-500 hover:border-blue-100 hover:bg-blue-50/30 transition-all min-h-[220px]">
                     <div className="p-4 bg-gray-50 rounded-2xl mb-4 group-hover:bg-white">
                       <Plus size={32} />
@@ -81,7 +82,7 @@ export default function GoalsPage() {
                 </div>
               </section>
 
-              {/* Completed Section */}
+              {/* Completed goals */}
               {completedGoals.length > 0 && (
                 <section className="opacity-60">
                    <div className="flex items-center gap-3 mb-6">
@@ -99,7 +100,7 @@ export default function GoalsPage() {
               )}
             </div>
 
-            {/* Sidebar: Insights & Milestones (Takes 1/4 width) */}
+            {/* Goal insight sidebar */}
             <div className="space-y-8">
               <div className="bg-white rounded-[32px] p-8 border border-gray-50 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">

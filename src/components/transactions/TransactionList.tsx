@@ -11,7 +11,6 @@ export default function TransactionList({
     <div className="mt-8">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-gray-800 dark:text-slate-100">Transaction history</h2>
-        {/* Optional: Add a "View all" or Filter button here later */}
       </div>
 
       <div className="w-full overflow-x-auto">
@@ -29,6 +28,7 @@ export default function TransactionList({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50/50 dark:divide-slate-700/60">
+            {/* Render each transaction row with its resolved category. */}
             {transactions.map((tx: any) => {
               const category = categories.find((c: any) => c.id === tx.categoryId);
               return (
@@ -45,7 +45,7 @@ export default function TransactionList({
           </tbody>
         </table>
 
-        {/* Empty State */}
+        {/* Empty state */}
         {transactions.length === 0 && (
           <div className="py-20 text-center">
             <p className="text-gray-400 dark:text-slate-400 text-sm">No transactions found for this period.</p>

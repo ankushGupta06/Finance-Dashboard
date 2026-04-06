@@ -7,6 +7,7 @@ import { Download, FileText } from "lucide-react";
 
 export default function InvoicesPage() {
   const handleDownloadInvoice = (invoice: (typeof invoices)[number]) => {
+    // Generate a plain-text invoice download for the selected record.
     const invoiceContent = `MOCK INVOICE
 
 Invoice ID: ${invoice.id}
@@ -44,6 +45,7 @@ This is a mock invoice generated for demo purposes only.
       <Container>
         <Header />
         <div className="px-4">
+          {/* Page header */}
           <div className="flex justify-between items-center mb-10">
             <div>
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">Invoices</h2>
@@ -51,6 +53,7 @@ This is a mock invoice generated for demo purposes only.
             </div>
           </div>
 
+          {/* Invoice history table */}
           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
             <table className="w-full text-left">
               <thead>
@@ -64,6 +67,7 @@ This is a mock invoice generated for demo purposes only.
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50/50">
+                {/* Render each invoice row with its download action. */}
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="group transition-colors">
                     <td className="py-5 font-bold text-sm text-gray-800">{inv.id}</td>
@@ -84,6 +88,7 @@ This is a mock invoice generated for demo purposes only.
                       />
                     </td>
                     <td className="py-5 text-right">
+                      {/* Download action for the selected invoice */}
                       <button
                         type="button"
                         onClick={() => handleDownloadInvoice(inv)}

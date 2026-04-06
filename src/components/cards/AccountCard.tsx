@@ -14,6 +14,7 @@ export default function AccountCard({
   isActive = true,
   onToggleActive,
 }: AccountCardProps) {
+  // Control the local card flip interaction for front and back views.
   const [isFlipped, setIsFlipped] = useState(false);
   const { transactions } = useTransactions();
   const accountTransactions = transactions.filter((tx) => tx.accountId === account.id);
@@ -31,6 +32,7 @@ export default function AccountCard({
           className={`relative w-full h-full transition-all duration-700 preserve-3d cursor-pointer ${isFlipped ? "rotate-y-180" : ""}`}
           onClick={() => setIsFlipped(!isFlipped)}
         >
+          {/* Card front */}
           <div className="absolute inset-0 backface-hidden">
             <div className="bg-blue-600 w-full h-full rounded-[24px] md:rounded-[32px] p-6 md:p-8 text-white overflow-hidden relative">
               <Cloud className="absolute -right-6 md:-right-10 -bottom-6 md:-bottom-10 h-32 w-32 md:h-48 md:w-48 opacity-10" />
@@ -58,6 +60,7 @@ export default function AccountCard({
             </div>
           </div>
 
+          {/* Card back */}
           <div className="absolute inset-0 backface-hidden rotate-y-180">
             <div className="bg-slate-800 w-full h-full rounded-[24px] md:rounded-[32px] text-white overflow-hidden relative flex flex-col justify-between py-6 md:py-8">
               <div className="bg-black w-full h-10 md:h-12 mt-2 md:mt-4 opacity-80" />
@@ -96,6 +99,7 @@ export default function AccountCard({
         </button>
       </div>
 
+      {/* Account metrics and activation control */}
       <div className="flex flex-col sm:flex-row lg:flex-col items-center sm:items-start justify-center gap-6 md:gap-8 w-full lg:w-auto">
         <div className="text-center sm:text-left">
           <div className="flex items-baseline justify-center sm:justify-start gap-1">

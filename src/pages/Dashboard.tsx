@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+  // Keep local card interactions isolated to the dashboard.
   const [allAccounts] = useState(initialAccounts);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isCardFrozen, setIsCardFrozen] = useState(false);
@@ -71,6 +72,7 @@ export default function DashboardPage() {
         <Header />
 
         <div className="px-4 pb-20">
+          {/* Account summary cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-10">
             <div className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4">
@@ -111,6 +113,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Primary card and linked accounts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-12">
             <div className="lg:col-span-2">
               <div className="flex justify-between items-center mb-6 px-2">
@@ -128,6 +131,7 @@ export default function DashboardPage() {
                   isCardBlurred ? "blur-sm opacity-70" : ""
                 }`}
               >
+                {/* Preserve the card height while the interactive layer is absolutely positioned. */}
                 <div className="invisible pointer-events-none w-full">
                   <AccountCard account={mainAccount} isActive={isCardActive} />
                 </div>
@@ -141,6 +145,7 @@ export default function DashboardPage() {
                     />
                   </div>
 
+                  {/* Alternate card face for CVV display */}
                   <div className="absolute inset-0 backface-hidden rotate-y-180">
                     <div className="bg-slate-900 w-full h-full rounded-[32px] p-8 flex flex-col justify-center items-center text-white shadow-2xl border border-white/5">
                       <p className="text-[10px] uppercase opacity-40 tracking-[0.4em] mb-6 font-black text-center">Security Verification View</p>
@@ -183,6 +188,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-4">
+                {/* Render secondary linked accounts. */}
                 {allAccounts.slice(1, 4).map((acc) => (
                   <div
                     key={acc.id}
@@ -219,11 +225,13 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Spending charts */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-10">
             <SpendingLineChart />
             <ExpensePieChart />
           </div>
 
+          {/* Activity feed and account snapshot */}
           <div className="grid grid-cols-1 xl:grid-cols-[1.25fr_0.9fr] gap-6 mt-10">
             <div className="bg-white dark:bg-slate-800 rounded-[36px] p-8 border border-gray-50 dark:border-slate-700 shadow-sm">
               <div className="flex items-center justify-between mb-6">
@@ -241,6 +249,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-3">
+                {/* Show the most recent transactions first. */}
                 {recentTransactions.map((tx) => {
                   const category = categories.find((cat) => cat.id === tx.categoryId);
                   const isIncome = tx.type === "income";

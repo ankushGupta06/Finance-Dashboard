@@ -56,6 +56,7 @@ export default function TransactionsPage() {
     useState<TransactionRecord | null>(null);
   const [formState, setFormState] = useState(getEmptyFormState);
 
+  // Keep the category list aligned with the selected transaction type.
   const filteredFormCategories = useMemo(
     () => categories.filter((category) => category.type === formState.type),
     [formState.type],
@@ -108,6 +109,7 @@ export default function TransactionsPage() {
     startIndex + ITEMS_PER_PAGE,
   );
 
+  // Reset the modal state before opening a fresh form.
   const resetForm = () => {
     setFormState(getEmptyFormState());
     setEditingTransaction(null);
@@ -211,9 +213,11 @@ export default function TransactionsPage() {
       };
 
       if (editingTransaction) {
+        // Persist edits to an existing transaction.
         await updateTransaction(editingTransaction.id, baseTransaction);
         addAlert("Transaction updated successfully.", "success");
       } else {
+        // Create a new transaction record for local storage.
         const newTx: TransactionRecord = {
           id: `t-${Date.now()}`,
           ...baseTransaction,
@@ -234,6 +238,7 @@ export default function TransactionsPage() {
 
   const handleDeleteTransaction = async (transactionId: string) => {
     try {
+      // Remove the selected transaction from the current dataset.
       await deleteTransaction(transactionId);
       setCurrentPage(1);
       addAlert("Transaction deleted successfully.", "success");
@@ -250,6 +255,7 @@ export default function TransactionsPage() {
         return;
       }
 
+      // Generate a client-side CSV file from the current transaction dataset.
       const headers = ["ID,Date,Note,Category,Amount,Type\n"];
 
       const rows = localTransactions.map((t) => {
@@ -301,6 +307,7 @@ export default function TransactionsPage() {
         <Header />
 
         <div className="px-4 pb-20">
+          {/* Page header and primary actions */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
             <div>
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">
@@ -321,17 +328,18 @@ export default function TransactionsPage() {
               </button>
 
               {role === "admin" && (
-              <button
-                onClick={openAddModal}
-                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all"
-              >
-                <Plus size={16} />
-                Add Transaction
+                <button
+                  onClick={openAddModal}
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all"
+                >
+                  <Plus size={16} />
+                  Add Transaction
                 </button>
               )}
             </div>
           </div>
 
+          {/* Search and filter controls */}
           <div className="bg-white p-4 rounded-[28px] border border-gray-50 shadow-sm mb-8 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search
@@ -370,6 +378,7 @@ export default function TransactionsPage() {
             </select>
           </div>
 
+          {/* Transaction table and pagination */}
           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
             {isLoading ? (
               <div className="py-20 text-center">
@@ -433,6 +442,7 @@ export default function TransactionsPage() {
           </div>
         </div>
 
+        {/* Transaction create/edit modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
             <div className="bg-white rounded-[40px] w-full max-w-md p-10 relative shadow-2xl animate-in fade-in zoom-in duration-200">
@@ -447,6 +457,7 @@ export default function TransactionsPage() {
                 {editingTransaction ? "Edit Transaction" : "New Transaction"}
               </h3>
 
+              {/* Transaction form */}
               <form onSubmit={handleAddTransaction} className="space-y-6">
                 <div>
                   <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">

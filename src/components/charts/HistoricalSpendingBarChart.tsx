@@ -43,6 +43,7 @@ export default function HistoricalSpendingBarChart({
       </div>
 
       <div className="rounded-[32px] border border-dashed border-gray-200 bg-gray-50/50 p-6">
+        {/* Render the bar chart only when at least one month has spending. */}
         {hasData ? (
           <>
             <div className="mb-3 pl-16 text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">

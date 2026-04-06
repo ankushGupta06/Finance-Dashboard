@@ -94,6 +94,39 @@ npm run preview
 - alerts/toasts for actions
 - animated transitions and card interactions
 
+## Mock API 
+
+Transactions are handled through a simulated frontend mock API layer.
+This abstraction mimics real backend behavior and keeps UI logic decoupled from data handling.
+
+The mock API supports:
+
+fetch transactions
+add transaction
+delete transaction (if implemented)
+filter and sort support
+pagination-ready structure
+simulated async behavior
+
+This allows easy migration to a real backend later.
+
+## Data Persistence
+
+The application persists selected UI, Transactions and user interaction state using browser storage.
+
+Persisted data includes:
+
+theme (light / dark)
+user role (viewer / admin)
+transactions added in admin mode
+UI preferences
+
+Persistence is implemented using localStorage, ensuring:
+
+state survives page refresh
+no backend required
+consistent user experience
+
 ## State Management
 
 The app uses a lightweight mixed approach:

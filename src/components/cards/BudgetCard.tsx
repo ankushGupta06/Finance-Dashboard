@@ -9,15 +9,18 @@ const iconMap: any = {
 
 export default function BudgetCard({ budget, category }: any) {
   const percent = Math.round((budget.spent / budget.limit) * 100);
+
   const theme = iconMap[category.id] || { icon: ShoppingCart, color: "bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-300" };
   const Icon = theme.icon;
 
   return (
     <div className="flex items-center gap-4 group">
+      {/* Category marker */}
       <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 ${theme.color}`}>
         <Icon size={20} />
       </div>
       
+      {/* Budget usage summary */}
       <div className="flex-1">
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-bold text-gray-400 dark:text-slate-400 capitalize tracking-wide">{category.name}</span>

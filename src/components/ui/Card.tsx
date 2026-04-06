@@ -19,6 +19,7 @@ export default function Card({ children, className = "", noPadding = false }: Ca
         ${className}
       `}
     >
+      {/* Shared surface wrapper used across summary cards. */}
       {children}
     </div>
   );

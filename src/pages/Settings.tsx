@@ -8,8 +8,10 @@ import { User, Bell, Shield, Mail, Smartphone, KeyRound } from "lucide-react";
 type SettingsTab = "profile" | "notifications" | "security";
 
 export default function SettingsPage() {
+  // Track the settings section shown in the detail panel.
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
 
+  // Define the navigation cards for each settings area.
   const settingSections: Array<{
     id: SettingsTab;
     icon: typeof User;
@@ -46,12 +48,14 @@ export default function SettingsPage() {
       <Container>
         <Header />
         <div className="px-4 pb-10">
+          {/* Page heading */}
           <div className="mb-10">
             <h2 className="text-3xl font-black text-gray-800 tracking-tight">Settings</h2>
             <p className="text-gray-400 text-sm mt-1">Personalize your Zorvyn experience</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Settings section selector */}
             <div className="space-y-4">
               {settingSections.map((section) => {
                 const isActive = activeTab === section.id;
@@ -89,7 +93,9 @@ export default function SettingsPage() {
               })}
             </div>
 
+            {/* Active settings panel */}
             <div className="bg-white rounded-[40px] p-10 border border-gray-50 shadow-sm flex flex-col gap-8">
+              {/* Profile form */}
               {activeTab === "profile" && (
                 <>
                   <div>
@@ -125,6 +131,7 @@ export default function SettingsPage() {
                 </>
               )}
 
+              {/* Notification preferences */}
               {activeTab === "notifications" && (
                 <>
                   <div>
@@ -162,6 +169,7 @@ export default function SettingsPage() {
                 </>
               )}
 
+              {/* Security controls */}
               {activeTab === "security" && (
                 <>
                   <div>
@@ -193,6 +201,7 @@ export default function SettingsPage() {
                         <p className="font-bold text-red-700 text-sm">Sign out of all devices</p>
                         <p className="text-xs text-red-400">This will end all active sessions</p>
                       </div>
+                      {/* Destructive account action */}
                       <button className="text-xs font-bold text-red-600 border border-red-200 px-3 py-2 rounded-xl hover:bg-red-100">
                         Sign Out
                       </button>

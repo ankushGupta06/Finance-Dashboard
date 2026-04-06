@@ -7,7 +7,7 @@ import { categories } from "../data/categories";
 import { PieChart, Wallet, ArrowUpRight, Plus } from "lucide-react";
 
 export default function BudgetsPage() {
-  // Calculate total budget stats
+  // Summarize the overall monthly budget state.
   const totalLimit = budgets.reduce((acc, b) => acc + b.limit, 0);
   const totalSpent = budgets.reduce((acc, b) => acc + b.spent, 0);
   const totalPercent = Math.round((totalSpent / totalLimit) * 100);
@@ -20,7 +20,7 @@ export default function BudgetsPage() {
         <Header />
 
         <div className="px-4">
-          {/* Page Header */}
+          {/* Page header */}
           <div className="flex justify-between items-center mb-10">
             <div>
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">Budget Planner</h2>
@@ -34,10 +34,10 @@ export default function BudgetsPage() {
 
           <div className="flex flex-col lg:flex-row gap-12">
             
-            {/* LEFT: Overall Monthly Health */}
+            {/* Monthly overview */}
             <div className="flex-1 space-y-8">
               <div className="bg-blue-600 rounded-[40px] p-10 text-white shadow-2xl shadow-blue-100 relative overflow-hidden">
-                {/* Decorative Icon Background */}
+                {/* Background accent */}
                 <PieChart size={180} className="absolute -right-10 -bottom-10 opacity-10" />
                 
                 <div className="relative z-10">
@@ -47,7 +47,7 @@ export default function BudgetsPage() {
                     <p className="text-blue-100 text-sm font-medium">Spent out of ₹{totalLimit.toLocaleString()}</p>
                   </div>
 
-                  {/* Large Progress Bar */}
+                  {/* Budget progress */}
                   <div className="mt-10">
                     <div className="flex justify-between text-xs font-bold mb-2">
                       <span>Monthly Progress</span>
@@ -63,7 +63,7 @@ export default function BudgetsPage() {
                 </div>
               </div>
 
-              {/* Quick Info Cards */}
+              {/* Supporting metrics */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-6 rounded-[32px] border border-gray-100">
                   <div className="p-3 bg-blue-50 text-blue-500 rounded-2xl w-fit mb-4">
@@ -82,7 +82,7 @@ export default function BudgetsPage() {
               </div>
             </div>
 
-            {/* RIGHT: Detailed Breakdown */}
+            {/* Category breakdown */}
             <div className="flex-[1.2] bg-white rounded-[40px] p-10 border border-gray-50 shadow-sm">
                <BudgetList budgets={budgets} categories={categories} />
             </div>

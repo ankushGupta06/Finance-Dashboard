@@ -18,6 +18,7 @@ export default function Header() {
   const { role, setRole } = useRole();
   const { theme, toggleTheme } = useTheme();
 
+  // Track the two interactive popovers in the header.
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
@@ -31,6 +32,7 @@ export default function Header() {
         }`}
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          {/* Title block */}
           <div className="min-w-0">
             <h2 className="text-xl font-black leading-tight tracking-tight text-gray-800 dark:text-white sm:text-2xl md:text-3xl">
               Financial Dashboard
@@ -41,6 +43,7 @@ export default function Header() {
           </div>
 
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:w-auto lg:justify-end">
+            {/* Global quick actions */}
             <div className="flex items-center justify-between gap-2 text-gray-400 sm:justify-start sm:gap-3 md:gap-4">
               <button
                 onClick={toggleTheme}
@@ -65,6 +68,7 @@ export default function Header() {
                     <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full border-2 border-white bg-red-500 dark:border-slate-900 group-hover:animate-ping"></span>
                   </button>
 
+                  {/* Notifications panel */}
                   {isNotificationsOpen && (
                     <>
                       <div
@@ -79,6 +83,7 @@ export default function Header() {
                         </div>
 
                         <div className="space-y-2">
+                          {/* Render notification items from the local dataset. */}
                           {notifications.map((notification) => (
                             <div
                               key={notification.id}
@@ -117,6 +122,7 @@ export default function Header() {
             </div>
 
             <div className="relative w-full sm:w-auto">
+              {/* Profile and role switcher */}
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className={`flex w-full items-center justify-between gap-3 rounded-2xl border p-1.5 pr-3 transition-all sm:w-auto sm:pr-4 ${
@@ -153,6 +159,7 @@ export default function Header() {
                 />
               </button>
 
+              {/* Profile menu */}
               {isProfileOpen && (
                 <>
                   <div
@@ -190,6 +197,7 @@ export default function Header() {
 
                     <div className="h-px bg-gray-100 dark:bg-slate-700 my-2 mx-2"></div>
 
+                    {/* Destructive account action */}
                     <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                       <LogOut size={16} />
                       Sign Out

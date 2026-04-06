@@ -3,11 +3,16 @@ import { useAlert } from "./AlertContext";
 
 type Role = "admin" | "viewer";
 
-const STORAGE_KEY = "zorvyn-role";
-const RoleContext = createContext<any>(null);
+type RoleContextValue = {
+  role: Role;
+  setRole: (newRole: Role) => void;
+};
 
-export const RoleProvider = ({ children }: any) => {
-  const [role, _setRole] = useState<Role>(() => {
+const STORAGE_KEY = "zorvyn-role";
+const RoleContext = createContext<RoleContextValue | null>(null);
+
+export const RoleProvider = ({ children }: { children: React.ReactNode }) => {
+  const [role, setStoredRole] = useState<Role>(() => {
     const savedRole = localStorage.getItem(STORAGE_KEY);
 
     return savedRole === "admin" || savedRole === "viewer"
@@ -20,15 +25,11 @@ export const RoleProvider = ({ children }: any) => {
     localStorage.setItem(STORAGE_KEY, role);
   }, [role]);
 
-  // ✅ Override setRole
   const setRole = (newRole: Role) => {
-    _setRole(newRole);
-
+    setStoredRole(newRole);
     addAlert(
-      `Switched to ${
-        newRole === "admin" ? "Admin" : "Viewer"
-      } mode`,
-      "info"
+      `Switched to ${newRole === "admin" ? "Admin" : "Viewer"} mode`,
+      "info",
     );
   };
 
@@ -41,8 +42,10 @@ export const RoleProvider = ({ children }: any) => {
 
 export const useRole = () => {
   const context = useContext(RoleContext);
+
   if (!context) {
     throw new Error("useRole must be used within RoleProvider");
   }
+
   return context;
 };

@@ -7,10 +7,12 @@ import { accounts as initialAccounts } from "../data/accounts";
 import { Plus, Settings2, ShieldCheck, RefreshCw } from "lucide-react";
 
 export default function AccountsPage() {
+  // Keep account additions and card flipping local to this page.
   const [allAccounts, setAllAccounts] = useState(initialAccounts);
   const [isFlipped, setIsFlipped] = useState(false);
 
   const addTemporaryCard = () => {
+    // Create a temporary demo account card for the wallet list.
     const newCard = {
       id: `acc-${Date.now()}`,
       name: "New Savings Account",
@@ -31,6 +33,7 @@ export default function AccountsPage() {
         <Header />
 
         <div className="px-4 pb-10">
+          {/* Page header and account action */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-8 md:mb-10">
             <div>
               <h2 className="text-2xl md:text-3xl font-black text-gray-800 dark:text-slate-100 tracking-tight">
@@ -50,6 +53,7 @@ export default function AccountsPage() {
             </button>
           </div>
 
+          {/* Primary card area and secondary accounts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
               <section className="bg-gray-50/50 dark:bg-transparent rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-gray-100 dark:border-transparent">
@@ -69,6 +73,7 @@ export default function AccountsPage() {
                 </div>
 
                 <div className="perspective-1000 w-full relative">
+                  {/* Preserve layout height for the flip container. */}
                   <div className="invisible pointer-events-none mb-6 md:mb-0">
                     <AccountCard account={allAccounts[0]} />
                   </div>
@@ -81,6 +86,7 @@ export default function AccountsPage() {
                     </div>
 
                     <div className="absolute inset-0 backface-hidden rotate-y-180">
+                      {/* Fallback shown when only one account is available. */}
                       {allAccounts[1] ? (
                         <AccountCard account={allAccounts[1]} />
                       ) : (
@@ -131,6 +137,7 @@ export default function AccountsPage() {
                 Other Accounts
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                {/* Render the remaining linked accounts. */}
                 {allAccounts.slice(1).map((acc) => (
                   <div
                     key={acc.id}

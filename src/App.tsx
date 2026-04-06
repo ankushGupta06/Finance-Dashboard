@@ -1,7 +1,4 @@
-// App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-// Pages
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import Budgets from "./pages/Budgets";
@@ -13,7 +10,6 @@ import SettingsPage from "./pages/Settings";
 
 export default function App() {
   return (
-    // Removed duplicate RoleProvider here
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Dashboard />} />

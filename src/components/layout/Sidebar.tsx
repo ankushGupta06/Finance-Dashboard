@@ -19,16 +19,18 @@ import {
 export default function Sidebar() {
   const location = useLocation();
   const { role } = useRole();
+  // Control the desktop collapsed state and mobile drawer visibility.
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  // Define the primary navigation items for the application shell.
   const navItems = [
     { name: "Overview", path: "/", icon: LayoutDashboard },
     { name: "Transactions", path: "/transactions", icon: ListOrdered },
     { name: "Cards", path: "/accounts", icon: CreditCard },
     { name: "Invoices", path: "/invoices", icon: Receipt },
     { name: "Goals", path: "/goals", icon: Target },
-    { name: "Insights", path: "/insights", icon: TrendingUp }, // New Section Added
+    { name: "Insights", path: "/insights", icon: TrendingUp },
     { name: "Settings", path: "/settings", icon: Settings },
   ];
 
@@ -37,7 +39,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+      {/* Mobile menu toggle */}
       <button 
         onClick={toggleMobile}
         className="lg:hidden fixed top-6 left-6 z-50 p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all"
@@ -45,7 +47,7 @@ export default function Sidebar() {
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar Aside */}
+      {/* Application sidebar */}
       <aside 
         className={`
           fixed lg:static inset-y-0 left-0 z-40
@@ -56,7 +58,7 @@ export default function Sidebar() {
         `}
       >
         <div className="relative">
-          {/* Top Section: Logo + Collapse Button */}
+          {/* Brand and collapse control */}
           <div className={`flex items-center justify-between mb-12 px-1`}>
             <div className="flex items-center gap-3">
               <div className="h-11 w-11 overflow-hidden rounded-2xl flex-shrink-0 bg-blue-600">
@@ -73,7 +75,7 @@ export default function Sidebar() {
               )}
             </div>
 
-            {/* Desktop Collapse Icon (Top Right) */}
+            {/* Desktop collapse control */}
             <button 
               onClick={toggleSidebar}
               className="hidden lg:flex items-center justify-center h-8 w-8 text-gray-400 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl transition-all"
@@ -85,7 +87,7 @@ export default function Sidebar() {
             </button>
           </div>
 
-          {/* Navigation Items */}
+          {/* Navigation links */}
           <nav className="flex flex-col gap-1.5">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -115,7 +117,7 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Bottom Section: Premium Promo */}
+        {/* Viewer upgrade prompt */}
         <div className="flex flex-col gap-4">
           {role === "viewer" && !isCollapsed ? (
             <div className="bg-amber-400 rounded-[32px] p-6 text-white text-center flex flex-col items-center gap-4 relative overflow-hidden">
@@ -142,7 +144,7 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile Backdrop Overlay */}
+      {/* Mobile backdrop */}
       {isMobileOpen && (
         <div 
           onClick={toggleMobile}

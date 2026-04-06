@@ -12,6 +12,7 @@ const palette: Record<string, string> = {
 export default function ExpensePieChart() {
   const { theme } = useTheme();
   const { transactions } = useTransactions();
+  // Build chart slices from expense transactions only.
   const data = categories
     .filter((cat) => cat.type === "expense")
     .map((cat) => ({
@@ -45,6 +46,7 @@ export default function ExpensePieChart() {
       </p>
 
       <div className="relative flex-1 min-h-[220px] w-full">
+        {/* Render the breakdown only when expense categories have values. */}
         {hasData ? (
           <>
             <ResponsiveContainer width="100%" height="100%">
@@ -81,15 +83,15 @@ export default function ExpensePieChart() {
 
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-300 dark:text-slate-500">
-                Highest Spend
-              </p>
-              <p className="mt-2 text-xl font-black text-gray-800 dark:text-slate-100">
-                Rs {maxExpenseItem?.value.toLocaleString() || "0"}
-              </p>
-              <p className="mt-1 text-[11px] font-bold text-gray-400 dark:text-slate-400">
-                {maxExpenseItem?.name || "No data"}
-              </p>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-gray-300 dark:text-slate-500">
+                  Highest Spend
+                </p>
+                <p className="mt-2 text-xl font-black text-gray-800 dark:text-slate-100">
+                  Rs {maxExpenseItem?.value.toLocaleString() || "0"}
+                </p>
+                <p className="mt-1 text-[11px] font-bold text-gray-400 dark:text-slate-400">
+                  {maxExpenseItem?.name || "No data"}
+                </p>
               </div>
             </div>
           </>
@@ -109,6 +111,7 @@ export default function ExpensePieChart() {
 
       {hasData && (
         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          {/* Surface the top categories below the chart for quick scanning. */}
           {topLabels.map((item) => (
             <div
               key={item.name}

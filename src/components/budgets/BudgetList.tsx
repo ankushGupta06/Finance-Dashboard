@@ -8,7 +8,7 @@ interface BudgetListProps {
 export default function BudgetList({ budgets, categories }: BudgetListProps) {
   return (
     <div className="flex flex-col gap-8">
-      {/* Section Header matches the "Outcome Statistics" label in the image */}
+      {/* Budget section header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-black text-gray-800 dark:text-slate-100 tracking-tight">
           Outcome Statistics
@@ -16,6 +16,7 @@ export default function BudgetList({ budgets, categories }: BudgetListProps) {
       </div>
 
       <div className="space-y-7">
+        {/* Render each budget entry with its matching category. */}
         {budgets.map((b: any) => {
           const cat = categories.find((c: any) => c.id === b.categoryId);
           if (!cat) return null;
@@ -31,7 +32,7 @@ export default function BudgetList({ budgets, categories }: BudgetListProps) {
         })}
       </div>
 
-      {/* Optional "View More" link as seen in high-end dashboards */}
+      {/* Secondary action for longer budget lists */}
       {budgets.length > 3 && (
         <button className="text-xs font-bold text-blue-500 dark:text-blue-300 uppercase tracking-widest text-left mt-2 hover:text-blue-600 dark:hover:text-blue-200 transition-colors">
           Show all categories &rarr;

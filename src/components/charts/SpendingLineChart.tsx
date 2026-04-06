@@ -11,6 +11,7 @@ import { useTransactions } from "../../context/TransactionsContext";
 
 export default function SpendingLineChart() {
   const { transactions } = useTransactions();
+  // Group expense activity by date for the chart series.
   const byDate = transactions.reduce<Record<string, number>>((acc, tx) => {
     if (tx.type === "expense") {
       acc[tx.date] = (acc[tx.date] || 0) + tx.amount;
@@ -36,6 +37,7 @@ export default function SpendingLineChart() {
       <h3 className="text-lg font-black text-gray-800 dark:text-slate-100 mb-2 tracking-tight">Expense Trend</h3>
       <p className="text-xs text-gray-400 dark:text-slate-400 mb-5">Last 10 days from mock data</p>
       <div className="flex-1 w-full">
+        {/* Render the chart only when expense history is available. */}
         {hasData ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={lineData} margin={{ left: 4, right: 12, top: 8, bottom: 4 }}>

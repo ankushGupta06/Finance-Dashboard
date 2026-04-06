@@ -90,6 +90,7 @@ export default function InsightsPage() {
         <Header />
 
         <div className="px-4 pb-10">
+          {/* Page heading */}
           <div className="mb-10">
             <h2 className="text-3xl font-black text-gray-800 tracking-tight">
               Smart Insights
@@ -100,9 +101,9 @@ export default function InsightsPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Column 1 & 2: Main Analysis */}
+            {/* Main analysis area */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Savings Rate "Hero" Card */}
+              {/* Savings overview */}
               <div className="bg-white rounded-[40px] p-10 border border-gray-100 shadow-sm relative overflow-hidden">
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-blue-50/50 -skew-x-12 translate-x-10" />
 
@@ -142,7 +143,7 @@ export default function InsightsPage() {
                 </div>
               </div>
 
-              {/* --- HISTORICAL SPENDING ANALYSIS (3-4 MONTHS) --- */}
+              {/* Historical spending analysis */}
               <div className="bg-white rounded-[40px] p-10 border border-gray-100 shadow-sm">
                 <div className="flex items-center justify-between mb-10">
                   <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -151,7 +152,7 @@ export default function InsightsPage() {
                   </div>
                 </div>
 
-                {/* Small Month Summary Cards */}
+                {/* Monthly summary cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                   {monthlyHistoryWithTrend.map((data) => (
                     <div
@@ -183,9 +184,9 @@ export default function InsightsPage() {
               </div>
             </div>
 
-            {/* Column 3: Observations & Highlights */}
+            {/* Supporting observations */}
             <div className="space-y-6">
-              {/* Top Category Observation */}
+              {/* Top category callout */}
               <div className="bg-amber-500 rounded-[32px] p-8 text-white">
                 <TrendingUp size={32} className="mb-6 opacity-80" />
                 <p className="text-xs font-bold uppercase tracking-widest opacity-70 mb-2">
@@ -211,7 +212,7 @@ export default function InsightsPage() {
                 </button>
               </div>
 
-              {/* Quick Summary Cards */}
+              {/* Quick summary card */}
               <div className="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-50 text-green-500 rounded-2xl">

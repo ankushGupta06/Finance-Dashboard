@@ -1,4 +1,5 @@
 export default function ProgressBar({ value, variant }: { value: number, variant?: string }) {
+  // Select the fill color based on the category variant.
   const colors: any = {
     c1: "bg-blue-400",
     c2: "bg-green-400",

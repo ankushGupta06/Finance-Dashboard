@@ -24,6 +24,7 @@ export default function TransactionItem({
   onEdit,
   onDelete,
 }: any) {
+  // Fall back to a generic icon when a category mapping is unavailable.
   const IconComponent = iconMap[category?.id] || CreditCard;
   const isIncome = tx.type === "income";
 
@@ -66,6 +67,7 @@ export default function TransactionItem({
         {isIncome ? "+" : "-"}Rs {tx.amount.toLocaleString()}
       </td>
 
+      {/* Admin-only row actions */}
       {role === "admin" && (
         <td className="py-4">
           <div className="flex items-center justify-end gap-2">
@@ -82,6 +84,7 @@ export default function TransactionItem({
               onClick={() => onDelete(tx.id)}
               className="inline-flex items-center gap-1 rounded-xl border border-red-600 bg-red-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:border-white"
             >
+              {/* Destructive action for transaction removal */}
               <Trash2 size={14} />
               Delete
             </button>
